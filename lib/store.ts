@@ -10,14 +10,6 @@ export const store = configureStore({
     survey: surveyReducer,
     response: responseReducer,
   },
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware({
-    serializableCheck: {
-      // Ignore these action types
-      ignoredActions: ['auth/loginSuccess', 'auth/loginFailure'],
-      // Ignore these paths in the state
-      ignoredPaths: ['auth.user'],
-    },
-  }),
 });
 
 // Types for Redux

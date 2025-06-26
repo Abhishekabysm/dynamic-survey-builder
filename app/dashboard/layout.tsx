@@ -1,6 +1,6 @@
 'use client';
 
-import { ReactNode, useEffect } from 'react';
+import { ReactNode, useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAppSelector, useAppDispatch } from '../../lib/store';
@@ -31,6 +31,18 @@ const LogoutIcon = () => (
   </svg>
 );
 
+const UserIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+  </svg>
+);
+
+const ChevronDownIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+  </svg>
+);
+
 interface DashboardLayoutProps {
   children: ReactNode;
 }
@@ -39,6 +51,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const { user, isLoading } = useAppSelector((state) => state.auth);
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     // Redirect to login if not authenticated
@@ -46,6 +60,20 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       router.push('/login');
     }
   }, [user, isLoading, router]);
+
+  useEffect(() => {
+    // Close dropdown when clicking outside
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setDropdownOpen(false);
+      }
+    }
+    
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [dropdownRef]);
 
   const handleLogout = async () => {
     await dispatch(logoutUser());
@@ -116,8 +144,36 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       <div className="flex-1 pl-64">
         <header className="bg-white shadow-sm py-4 px-6 flex items-center justify-between">
           <h2 className="text-xl font-semibold text-gray-800">Dashboard</h2>
-          <div className="text-gray-600 text-sm">
-            {user.email}
+          
+          {/* User dropdown */}
+          <div className="relative" ref={dropdownRef}>
+            <button 
+              className="flex items-center text-gray-700 hover:text-blue-600 focus:outline-none"
+              onClick={() => setDropdownOpen(!dropdownOpen)}
+            >
+              <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mr-2">
+                {user.email ? user.email[0].toUpperCase() : 'U'}
+              </div>
+              <span className="text-sm font-medium">{user.email}</span>
+              <ChevronDownIcon />
+            </button>
+            
+            {dropdownOpen && (
+              <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10">
+                <div className="px-4 py-2 text-xs text-gray-500">
+                  Signed in as
+                  <div className="font-medium text-gray-900 truncate">{user.email}</div>
+                </div>
+                <div className="border-t border-gray-100"></div>
+                <button
+                  onClick={handleLogout}
+                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
+                >
+                  <LogoutIcon />
+                  <span className="ml-2">Sign out</span>
+                </button>
+              </div>
+            )}
           </div>
         </header>
         

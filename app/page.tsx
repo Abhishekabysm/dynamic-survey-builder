@@ -1,6 +1,29 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useAppSelector, useAppDispatch } from '../lib/store';
+import { logoutUser } from '../features/auth/authSlice';
 
 export default function Home() {
+  const { user } = useAppSelector((state) => state.auth);
+  const dispatch = useAppDispatch();
+  const router = useRouter();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const handleLogout = async () => {
+    await dispatch(logoutUser());
+  };
+
+  const handleDashboard = () => {
+    router.push('/dashboard');
+  };
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-6 bg-gradient-to-b from-blue-50 to-white">
       <div className="max-w-4xl w-full text-center">
@@ -11,18 +34,39 @@ export default function Home() {
           Create beautiful surveys, gather responses, and analyze results - all in one platform
         </p>
         
-        <div className="flex flex-col sm:flex-row justify-center gap-4 mb-12">
-          <Link href="/login">
-            <div className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-lg transition-colors duration-200 font-medium">
-              Login
-            </div>
-          </Link>
-          <Link href="/register">
-            <div className="px-6 py-3 bg-white hover:bg-gray-100 text-blue-600 rounded-lg shadow-lg border border-blue-200 transition-colors duration-200 font-medium">
-              Register
-            </div>
-          </Link>
-        </div>
+        {mounted && (
+          <div className="flex flex-col sm:flex-row justify-center gap-4 mb-12">
+            {user ? (
+              <>
+                <button
+                  onClick={handleDashboard}
+                  className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-lg transition-colors duration-200 font-medium"
+                >
+                  Go to Dashboard
+                </button>
+                <button
+                  onClick={handleLogout}
+                  className="px-6 py-3 bg-white hover:bg-gray-100 text-red-600 rounded-lg shadow-lg border border-red-200 transition-colors duration-200 font-medium"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link href="/login">
+                  <div className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-lg transition-colors duration-200 font-medium">
+                    Login
+                  </div>
+                </Link>
+                <Link href="/register">
+                  <div className="px-6 py-3 bg-white hover:bg-gray-100 text-blue-600 rounded-lg shadow-lg border border-blue-200 transition-colors duration-200 font-medium">
+                    Register
+                  </div>
+                </Link>
+              </>
+            )}
+          </div>
+        )}
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
           <div className="bg-white p-6 rounded-xl shadow-md">

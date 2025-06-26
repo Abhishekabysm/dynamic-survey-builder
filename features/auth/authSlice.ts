@@ -9,11 +9,30 @@ import {
 import { auth } from '../../firebase/config';
 
 // Types
+interface SerializableUser {
+  uid: string;
+  email: string | null;
+  displayName: string | null;
+  photoURL: string | null;
+  emailVerified: boolean;
+}
+
 interface AuthState {
-  user: User | null;
+  user: SerializableUser | null;
   isLoading: boolean;
   error: string | null;
 }
+
+// Function to convert Firebase User to serializable object
+const serializeUser = (user: User): SerializableUser => {
+  return {
+    uid: user.uid,
+    email: user.email,
+    displayName: user.displayName,
+    photoURL: user.photoURL,
+    emailVerified: user.emailVerified,
+  };
+};
 
 // Initial state
 const initialState: AuthState = {
@@ -32,7 +51,7 @@ export const registerUser = createAsyncThunk(
         email,
         password
       );
-      return userCredential.user;
+      return serializeUser(userCredential.user);
     } catch (error: any) {
       return rejectWithValue(error.message || 'Registration failed');
     }
@@ -48,7 +67,7 @@ export const loginUser = createAsyncThunk(
         email,
         password
       );
-      return userCredential.user;
+      return serializeUser(userCredential.user);
     } catch (error: any) {
       return rejectWithValue(error.message || 'Login failed');
     }
@@ -73,7 +92,7 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     setUser: (state, action: PayloadAction<User | null>) => {
-      state.user = action.payload;
+      state.user = action.payload ? serializeUser(action.payload) : null;
     },
     clearError: (state) => {
       state.error = null;
