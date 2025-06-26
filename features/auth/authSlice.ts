@@ -1,14 +1,16 @@
+'use client';
+
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { auth } from '../../firebase/config';
 import { 
   createUserWithEmailAndPassword, 
   signInWithEmailAndPassword,
   signOut,
-  UserCredential,
-  User
+  sendEmailVerification,
+  User as FirebaseUser
 } from 'firebase/auth';
-import { auth } from '../../firebase/config';
 
-// Types
+// A serializable user object
 interface SerializableUser {
   uid: string;
   email: string | null;
@@ -21,82 +23,83 @@ interface AuthState {
   user: SerializableUser | null;
   isLoading: boolean;
   error: string | null;
+  needsEmailVerification: boolean; // This will be set by the onAuthStateChanged listener
+  verificationEmailSent: boolean;
 }
 
-// Function to convert Firebase User to serializable object
-const serializeUser = (user: User): SerializableUser => {
-  return {
-    uid: user.uid,
-    email: user.email,
-    displayName: user.displayName,
-    photoURL: user.photoURL,
-    emailVerified: user.emailVerified,
-  };
-};
-
-// Initial state
 const initialState: AuthState = {
   user: null,
   isLoading: false,
   error: null,
+  needsEmailVerification: false,
+  verificationEmailSent: false,
 };
 
-// Async thunks
+// Just creates the user. The listener in providers.tsx will handle the rest.
 export const registerUser = createAsyncThunk(
-  'auth/register',
+  'auth/registerUser',
   async ({ email, password }: { email: string; password: string }, { rejectWithValue }) => {
     try {
-      const userCredential: UserCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      return serializeUser(userCredential.user);
-    } catch (error: any) {
-      return rejectWithValue(error.message || 'Registration failed');
-    }
-  }
-);
-
-export const loginUser = createAsyncThunk(
-  'auth/login',
-  async ({ email, password }: { email: string; password: string }, { rejectWithValue }) => {
-    try {
-      const userCredential: UserCredential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      return serializeUser(userCredential.user);
-    } catch (error: any) {
-      return rejectWithValue(error.message || 'Login failed');
-    }
-  }
-);
-
-export const logoutUser = createAsyncThunk(
-  'auth/logout',
-  async (_, { rejectWithValue }) => {
-    try {
-      await signOut(auth);
+      await createUserWithEmailAndPassword(auth, email, password);
+      // The onAuthStateChanged listener will pick up the new user.
       return null;
     } catch (error: any) {
-      return rejectWithValue(error.message || 'Logout failed');
+      return rejectWithValue(error.message);
     }
   }
 );
 
-// Slice
+// Just signs the user in. The listener in providers.tsx will handle the rest.
+export const loginUser = createAsyncThunk(
+  'auth/loginUser',
+  async ({ email, password }: { email: string; password: string }, { rejectWithValue }) => {
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      // The onAuthStateChanged listener will pick up the logged-in user.
+      return null;
+    } catch (error: any) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const logoutUser = createAsyncThunk('auth/logoutUser', async () => {
+  await signOut(auth);
+});
+
+// Renamed to be more descriptive. This just re-sends the link.
+export const resendVerificationLink = createAsyncThunk(
+  'auth/resendVerificationLink',
+  async (_, { rejectWithValue }) => {
+    try {
+      const user = auth.currentUser;
+      if (user) {
+        await sendEmailVerification(user);
+        return true;
+      }
+      return rejectWithValue('No user is currently signed in.');
+    } catch (error: any) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    setUser: (state, action: PayloadAction<User | null>) => {
-      state.user = action.payload ? serializeUser(action.payload) : null;
+    setUser: (state, action: PayloadAction<SerializableUser | null>) => {
+      state.user = action.payload;
+      if(action.payload) {
+        state.needsEmailVerification = !action.payload.emailVerified;
+      }
     },
-    clearError: (state) => {
-      state.error = null;
+    setError: (state, action: PayloadAction<string | null>) => {
+      state.error = action.payload;
     },
+    setLoading: (state, action: PayloadAction<boolean>) => {
+      state.isLoading = action.payload;
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -105,9 +108,8 @@ const authSlice = createSlice({
         state.isLoading = true;
         state.error = null;
       })
-      .addCase(registerUser.fulfilled, (state, action) => {
+      .addCase(registerUser.fulfilled, (state) => {
         state.isLoading = false;
-        state.user = action.payload;
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.isLoading = false;
@@ -118,28 +120,30 @@ const authSlice = createSlice({
         state.isLoading = true;
         state.error = null;
       })
-      .addCase(loginUser.fulfilled, (state, action) => {
+      .addCase(loginUser.fulfilled, (state) => {
         state.isLoading = false;
-        state.user = action.payload;
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
       })
       // Logout
-      .addCase(logoutUser.pending, (state) => {
-        state.isLoading = true;
-      })
       .addCase(logoutUser.fulfilled, (state) => {
-        state.isLoading = false;
-        state.user = null;
+        Object.assign(state, initialState);
       })
-      .addCase(logoutUser.rejected, (state, action) => {
-        state.isLoading = false;
+      // Resend Verification Link
+      .addCase(resendVerificationLink.pending, (state) => {
+        state.verificationEmailSent = false;
+      })
+      .addCase(resendVerificationLink.fulfilled, (state) => {
+        state.verificationEmailSent = true;
+      })
+      .addCase(resendVerificationLink.rejected, (state, action) => {
         state.error = action.payload as string;
       });
   },
 });
 
-export const { setUser, clearError } = authSlice.actions;
+export const { setUser, setError, setLoading } = authSlice.actions;
+
 export default authSlice.reducer; 

@@ -1,61 +1,54 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useAppDispatch } from '../../lib/store';
-import { registerUser } from '../../features/auth/authSlice';
+import { useAppDispatch, useAppSelector } from '../../lib/store';
+import { registerUser, setError } from '../../features/auth/authSlice';
 
 export default function Register() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const { isLoading, error } = useAppSelector((state) => state.auth);
+
+  useEffect(() => {
+    // Clear any previous errors when the component mounts
+    dispatch(setError(null));
+  }, [dispatch]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
-
-    // Validate passwords match
+    
     if (password !== confirmPassword) {
-      setError("Passwords don't match");
+      dispatch(setError('Passwords do not match'));
       return;
     }
-
-    // Validate password strength
-    if (password.length < 6) {
-      setError("Password should be at least 6 characters");
-      return;
-    }
-
-    setIsLoading(true);
 
     try {
+      console.log('Dispatching registerUser action for:', email);
       const resultAction = await dispatch(registerUser({ email, password }));
+      
       if (registerUser.fulfilled.match(resultAction)) {
-        router.push('/dashboard');
-      } else if (registerUser.rejected.match(resultAction)) {
-        setError(resultAction.payload as string || 'Registration failed');
+        console.log('Registration fulfilled. Navigating to /verify-email');
+        router.push('/verify-email');
+      } else {
+        if (resultAction.payload) {
+          console.error('Registration rejected with payload:', resultAction.payload);
+        } else {
+          console.error('Registration rejected without payload.');
+          dispatch(setError('An unknown error occurred during registration.'));
+        }
       }
-    } catch (error: any) {
-      setError(error.message || 'An error occurred during registration');
-    } finally {
-      setIsLoading(false);
+    } catch (err) {
+      console.error('An unexpected error occurred in handleSubmit:', err);
+      dispatch(setError('A client-side error occurred.'));
     }
-  };
-
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
-
-  const toggleConfirmPasswordVisibility = () => {
-    setShowConfirmPassword(!showConfirmPassword);
   };
 
   return (
@@ -63,12 +56,12 @@ export default function Register() {
       <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-lg shadow-md">
         <div>
           <h2 className="text-center text-3xl font-extrabold text-gray-900">
-            Create your account
+            Create a new account
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
             Or{' '}
             <Link href="/login" className="font-medium text-blue-600 hover:text-blue-500">
-              sign in to your account
+              sign in to existing account
             </Link>
           </p>
         </div>
@@ -117,7 +110,7 @@ export default function Register() {
                 <button 
                   type="button" 
                   className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5 mt-1"
-                  onClick={togglePasswordVisibility}
+                  onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? (
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
@@ -152,7 +145,7 @@ export default function Register() {
                 <button 
                   type="button" 
                   className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5 mt-1"
-                  onClick={toggleConfirmPasswordVisibility}
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 >
                   {showConfirmPassword ? (
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">

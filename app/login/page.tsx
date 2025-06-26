@@ -1,42 +1,41 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useAppDispatch } from '../../lib/store';
-import { loginUser } from '../../features/auth/authSlice';
+import { useAppDispatch, useAppSelector } from '../../lib/store';
+import { loginUser, setError } from '../../features/auth/authSlice';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const { isLoading, error, user, needsEmailVerification } = useAppSelector((state) => state.auth);
+
+  useEffect(() => {
+    // This effect handles redirection based on the user's auth state.
+    if (user) {
+      // It runs after login or if a user is already logged in.
+      if (needsEmailVerification) {
+        router.push('/verify-email');
+      } else {
+        router.push('/dashboard');
+      }
+    }
+  }, [user, needsEmailVerification, router]);
+
+  useEffect(() => {
+    // Clear previous errors when the component mounts
+    dispatch(setError(null));
+  }, [dispatch]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
-    setIsLoading(true);
-
-    try {
-      const resultAction = await dispatch(loginUser({ email, password }));
-      if (loginUser.fulfilled.match(resultAction)) {
-        router.push('/dashboard');
-      } else if (loginUser.rejected.match(resultAction)) {
-        setError(resultAction.payload as string || 'Login failed');
-      }
-    } catch (error: any) {
-      setError(error.message || 'An error occurred during login');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
+    // Dispatch the login action. The useEffect above will handle the redirect.
+    await dispatch(loginUser({ email, password }));
   };
 
   return (
@@ -97,7 +96,7 @@ export default function Login() {
                 <button 
                   type="button" 
                   className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5 mt-1"
-                  onClick={togglePasswordVisibility}
+                  onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? (
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">

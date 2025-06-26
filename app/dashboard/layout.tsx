@@ -48,7 +48,7 @@ interface DashboardLayoutProps {
 }
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
-  const { user, isLoading } = useAppSelector((state) => state.auth);
+  const { user, isLoading, needsEmailVerification } = useAppSelector((state) => state.auth);
   const router = useRouter();
   const dispatch = useAppDispatch();
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -58,8 +58,14 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     // Redirect to login if not authenticated
     if (!isLoading && !user) {
       router.push('/login');
+      return;
     }
-  }, [user, isLoading, router]);
+    
+    // Redirect to email verification page if email is not verified
+    if (!isLoading && user && needsEmailVerification) {
+      router.push('/verify-email');
+    }
+  }, [user, isLoading, needsEmailVerification, router]);
 
   useEffect(() => {
     // Close dropdown when clicking outside
@@ -80,7 +86,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     router.push('/');
   };
 
-  if (isLoading || !user) {
+  if (isLoading || !user || needsEmailVerification) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div>
