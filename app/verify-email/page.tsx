@@ -5,18 +5,41 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAppSelector, useAppDispatch } from '../../lib/store';
 import { resendVerificationLink, logoutUser } from '../../features/auth/authSlice';
+import { auth } from '../../firebase/config';
 
 export default function VerifyEmail() {
-  const { user, isLoading, verificationEmailSent, error, needsEmailVerification } = useAppSelector((state) => state.auth);
+  const { user, isLoading, verificationEmailSent, error } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
   const router = useRouter();
 
   useEffect(() => {
-    // If user is somehow already verified, or no longer logged in, redirect them.
-    if (!needsEmailVerification || !user) {
+    // This effect will periodically check the user's verification status
+    const intervalId = setInterval(async () => {
+      if (auth.currentUser) {
+        // Force a reload of the user's profile from Firebase
+        await auth.currentUser.reload();
+        
+        // If the email is now verified, redirect them
+        if (auth.currentUser.emailVerified) {
+          console.log('Email successfully verified! Redirecting to dashboard...');
+          clearInterval(intervalId);
+          // We push to /login, which will then see a verified user and redirect to /dashboard.
+          // This ensures all state is correctly updated by the main auth listener.
+          router.push('/login');
+        }
+      }
+    }, 3000); // Check every 3 seconds
+
+    // Clean up the interval when the component is unmounted
+    return () => clearInterval(intervalId);
+  }, [router]);
+
+  useEffect(() => {
+    // If the user logs out or the session ends, redirect to login
+    if (!user) {
       router.push('/login');
     }
-  }, [user, needsEmailVerification, router]);
+  }, [user, router]);
 
   const handleResend = () => {
     dispatch(resendVerificationLink());
@@ -24,19 +47,27 @@ export default function VerifyEmail() {
 
   const handleLogout = async () => {
     await dispatch(logoutUser());
-    router.push('/login');
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-6 bg-white p-8 rounded-lg shadow-md text-center">
+        <div className="animate-pulse text-blue-500 mb-4">
+          <svg className="mx-auto h-12 w-12" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+          </svg>
+        </div>
         <h2 className="text-2xl font-extrabold text-gray-900">
           Verify Your Email
         </h2>
         
         <p className="text-gray-600">
           We've sent a verification link to <span className="font-medium text-gray-800">{user?.email}</span>.
-          Please check your inbox (and spam folder) and click the link to activate your account.
+          Please check your inbox and click the link to activate your account.
+        </p>
+
+        <p className="text-sm text-gray-500 pt-2">
+          This page will automatically redirect after you've verified your email.
         </p>
 
         {error && (
@@ -47,7 +78,7 @@ export default function VerifyEmail() {
 
         {verificationEmailSent && (
           <div className="bg-green-50 border border-green-200 text-green-700 px-3 py-2 rounded-md text-sm">
-            A new verification link has been sent to your email.
+            A new verification link has been sent.
           </div>
         )}
         
@@ -71,11 +102,8 @@ export default function VerifyEmail() {
         </div>
         
         <div className="mt-2 text-center">
-          <p className="text-xs text-gray-500">
-            After verifying, you may need to log in again.
-          </p>
           <Link href="/login" className="font-medium text-sm text-blue-600 hover:text-blue-500">
-            → Go to Login
+            → Manually go to Login
           </Link>
         </div>
       </div>
