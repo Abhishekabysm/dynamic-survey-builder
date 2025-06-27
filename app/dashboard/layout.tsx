@@ -159,8 +159,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       {/* Sidebar */}
       <div className={`fixed inset-y-0 left-0 z-30 transition-all duration-300 ${isSidebarCollapsed ? 'w-20' : 'w-64'}`}>
         <div className="flex h-full flex-col bg-gray-50 border-r border-gray-200">
-          <div className="flex h-[65px] items-center justify-between border-b border-gray-200 px-4">
-            <div className={`font-bold text-gray-800 ${isSidebarCollapsed ? 'hidden' : 'block'}`}>
+          <div className={`flex h-[65px] items-center border-b border-gray-200 px-4 ${isSidebarCollapsed ? 'justify-center' : 'justify-between'}`}>
+            <div className={`font-bold text-gray-800 whitespace-nowrap ${isSidebarCollapsed ? 'hidden' : 'block'}`} style={{ width: '130px' }}>
               Survey Builder
             </div>
             <div className={`font-bold text-gray-800 ${!isSidebarCollapsed ? 'hidden' : 'block'}`}>
@@ -168,7 +168,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             </div>
             <button
               onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-              className="rounded-lg p-1 text-gray-500 hover:bg-gray-200"
+              className={`rounded-lg p-1 text-gray-500 hover:bg-gray-200 ${isSidebarCollapsed ? 'ml-2' : ''}`}
             >
               <PanelCloseIcon className={`h-6 w-6 transition-transform duration-300 ${isSidebarCollapsed ? 'rotate-180' : ''}`} />
             </button>
