@@ -18,7 +18,8 @@ export default function Dashboard() {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    if (user) {
+    if (user && user.emailVerified) {
+      console.log('Fetching surveys for user:', user.uid);
       dispatch(fetchUserSurveys(user.uid));
     }
   }, [dispatch, user]);

@@ -74,15 +74,20 @@ export const fetchUserSurveys = createAsyncThunk(
   'survey/fetchUserSurveys',
   async (userId: string, { rejectWithValue }) => {
     try {
+      console.log('fetchUserSurveys: Querying for userId:', userId);
       const surveysRef = collection(firestore, 'surveys');
       const q = query(surveysRef, where('createdBy', '==', userId));
       const querySnapshot = await getDocs(q);
       
-      return querySnapshot.docs.map(doc => ({
+      const surveys = querySnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       })) as Survey[];
+
+      console.log('fetchUserSurveys: Found surveys:', surveys.length);
+      return surveys;
     } catch (error: any) {
+      console.error('fetchUserSurveys: Error fetching surveys', error);
       return rejectWithValue(error.message || 'Failed to fetch surveys');
     }
   }

@@ -1,7 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-import { getFirestore, enableNetwork } from "firebase/firestore";
+import { getFirestore } from "firebase/firestore";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -17,12 +17,5 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const firestore = getFirestore(app);
-
-// Ensure the client is online before exporting
-enableNetwork(firestore).then(() => {
-  console.log("Firestore network connection enabled.");
-}).catch((error) => {
-  console.error("Firestore network connection failed:", error);
-});
 
 export { auth, firestore }; 
