@@ -1,9 +1,37 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useAppSelector, useAppDispatch } from '@/lib/store';
 import { fetchUserSurveys, deleteSurvey, publishSurvey } from '@/features/survey/surveySlice';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
+import { MoreHorizontal, PlusCircle, Trash2, Share2, Edit, BarChart2, Eye } from 'lucide-react';
 
 // Icons
 const CreateIcon = () => (
@@ -28,23 +56,29 @@ export default function Dashboard() {
   const { user } = useAppSelector((state) => state.auth);
   const { surveys, isLoading } = useAppSelector((state) => state.survey);
   const dispatch = useAppDispatch();
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showPublishDialog, setShowPublishDialog] = useState(false);
+  const [selectedSurveyId, setSelectedSurveyId] = useState<string | null>(null);
 
   useEffect(() => {
     if (user && user.emailVerified) {
-      console.log('Fetching surveys for user:', user.uid);
       dispatch(fetchUserSurveys(user.uid));
     }
   }, [dispatch, user]);
 
-  const handleDeleteSurvey = (surveyId: string) => {
-    if (window.confirm('Are you sure you want to delete this survey? This action cannot be undone.')) {
-      dispatch(deleteSurvey(surveyId));
+  const handleDelete = () => {
+    if (selectedSurveyId) {
+      dispatch(deleteSurvey(selectedSurveyId));
+      setShowDeleteDialog(false);
+      setSelectedSurveyId(null);
     }
   };
 
-  const handlePublishSurvey = (surveyId: string) => {
-    if (window.confirm('Are you sure you want to publish this survey? Once published, it will be accessible to anyone with the link.')) {
-      dispatch(publishSurvey(surveyId));
+  const handlePublish = () => {
+    if (selectedSurveyId) {
+      dispatch(publishSurvey(selectedSurveyId));
+      setShowPublishDialog(false);
+      setSelectedSurveyId(null);
     }
   };
 
@@ -57,139 +91,205 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <div className="flex justify-between items-center mb-5">
-          <h2 className="text-2xl font-bold text-gray-800">Welcome to Survey Builder</h2>
-          <Link href="/dashboard/surveys/create">
-            <div className="bg-blue-600 hover:bg-blue-700 text-white flex items-center px-4 py-2 rounded-lg shadow-sm transition-colors">
-              <CreateIcon />
-              <span className="ml-2">Create Survey</span>
-            </div>
-          </Link>
-        </div>
-        <p className="text-gray-600">
-          Get started by creating a new survey or checking your existing ones.
-        </p>
-      </div>
-
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <h3 className="text-xl font-semibold text-gray-800 mb-4">Your Recent Surveys</h3>
-        
-        {isLoading ? (
-          <div className="flex justify-center py-8">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-          </div>
-        ) : surveys.length === 0 ? (
-          <div className="text-center py-8 bg-gray-50 rounded-lg">
-            <p className="text-gray-500 mb-3">You haven't created any surveys yet.</p>
+      <Card>
+        <CardHeader>
+          <CardTitle>Welcome to Survey Builder</CardTitle>
+          <CardDescription>
+            Get started by creating a new survey or checking your existing ones.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Button asChild>
             <Link href="/dashboard/surveys/create">
-              <div className="text-blue-600 hover:text-blue-800 font-medium">
-                Create your first survey
-              </div>
+              <PlusCircle className="mr-2 h-4 w-4" /> Create Survey
             </Link>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {surveys.slice(0, 6).map((survey) => (
-              <div key={survey.id} className="border rounded-lg p-4 bg-white hover:shadow-lg transition-shadow flex flex-col justify-between">
-                <div>
-                  <h4 className="font-medium text-lg text-gray-800 mb-1">{survey.title}</h4>
-                  <p className="text-sm text-gray-500 mb-3 line-clamp-2 h-10">{survey.description}</p>
-                </div>
-                <div className="flex justify-between items-center mt-2">
-                  <span className={`text-xs px-2 py-1 rounded font-medium ${
-                    survey.isPublished ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800'
-                  }`}>
-                    {survey.isPublished ? 'Published' : 'Draft'}
-                  </span>
-                  <div className="flex items-center space-x-2">
+          </Button>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Your Recent Surveys</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {isLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              {[...Array(3)].map((_, i) => (
+                <Card key={i}>
+                  <CardHeader>
+                    <Skeleton className="h-5 w-3/4" />
+                  </CardHeader>
+                  <CardContent>
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-full mt-2" />
+                  </CardContent>
+                  <CardFooter>
+                    <Skeleton className="h-8 w-1/4" />
+                  </CardFooter>
+                </Card>
+              ))}
+            </div>
+          ) : surveys.length === 0 ? (
+            <div className="text-center py-8 bg-gray-50 rounded-lg">
+              <p className="text-gray-500 mb-3">You haven't created any surveys yet.</p>
+              <Button variant="link" asChild>
+                <Link href="/dashboard/surveys/create">
+                  Create your first survey
+                </Link>
+              </Button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              {surveys.slice(0, 6).map((survey) => (
+                <Card key={survey.id}>
+                  <CardHeader>
+                    <CardTitle className="truncate">{survey.title}</CardTitle>
+                    <Badge variant={survey.isPublished ? 'default' : 'secondary'}>
+                      {survey.isPublished ? 'Published' : 'Draft'}
+                    </Badge>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground line-clamp-2 h-10">{survey.description}</p>
+                  </CardContent>
+                  <CardFooter className="flex justify-between">
                     <Link href={`/dashboard/surveys/${survey.id}`}>
-                      <div className="text-blue-600 hover:underline text-sm cursor-pointer">Edit</div>
+                      <Button variant="outline" size="sm">
+                        <Edit className="mr-2 h-4 w-4" /> Edit
+                      </Button>
                     </Link>
-                    <button onClick={() => handleDeleteSurvey(survey.id!)} className="text-red-500 hover:text-red-700" title="Delete Survey">
-                      <DeleteIcon />
-                    </button>
-                    
-                    {survey.isPublished ? (
-                      <>
-                        <Link href={`/dashboard/surveys/${survey.id}/results`}>
-                          <div className="text-purple-600 hover:text-purple-800" title="View Results">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                            </svg>
-                          </div>
-                        </Link>
-                        <button onClick={() => handleShareSurvey(survey.id!)} className="text-green-600 hover:text-green-800" title="Copy Share Link">
-                          <ShareIcon />
-                        </button>
-                      </>
-                    ) : (
-                      <button onClick={() => handlePublishSurvey(survey.id!)} className="text-gray-600 hover:text-gray-900" title="Publish Survey">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                        </svg>
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-        
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="h-8 w-8 p-0">
+                          <span className="sr-only">Open menu</span>
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        {survey.isPublished ? (
+                          <>
+                            <DropdownMenuItem onClick={() => handleShareSurvey(survey.id!)}>
+                              <Share2 className="mr-2 h-4 w-4" />
+                              Share
+                            </DropdownMenuItem>
+                            <DropdownMenuItem asChild>
+                              <Link href={`/dashboard/surveys/${survey.id}/results`}>
+                                <BarChart2 className="mr-2 h-4 w-4" />
+                                Results
+                              </Link>
+                            </DropdownMenuItem>
+                          </>
+                        ) : (
+                          <DropdownMenuItem
+                            onClick={() => {
+                              setSelectedSurveyId(survey.id!);
+                              setShowPublishDialog(true);
+                            }}
+                          >
+                            <Eye className="mr-2 h-4 w-4" />
+                            Publish
+                          </DropdownMenuItem>
+                        )}
+                        <DropdownMenuItem
+                          onClick={() => {
+                            setSelectedSurveyId(survey.id!);
+                            setShowDeleteDialog(true);
+                          }}
+                          className="text-red-600"
+                        >
+                          <Trash2 className="mr-2 h-4 w-4" />
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </CardFooter>
+                </Card>
+              ))}
+            </div>
+          )}
+        </CardContent>
         {surveys.length > 6 && (
-          <div className="mt-4 text-center">
-            <Link href="/dashboard/surveys">
-              <div className="text-blue-600 hover:text-blue-800">
+          <CardFooter className="justify-center">
+            <Button variant="link" asChild>
+              <Link href="/dashboard/surveys">
                 View all surveys
-              </div>
-            </Link>
-          </div>
+              </Link>
+            </Button>
+          </CardFooter>
         )}
-      </div>
+      </Card>
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h3 className="text-xl font-semibold text-gray-800 mb-4">Quick Stats</h3>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="bg-blue-50 p-4 rounded-lg">
-              <div className="text-3xl font-bold text-blue-700">{surveys.length}</div>
-              <div className="text-sm text-gray-600">Total Surveys</div>
+        <Card>
+          <CardHeader>
+            <CardTitle>Quick Stats</CardTitle>
+          </CardHeader>
+          <CardContent className="grid grid-cols-2 gap-4">
+            <div className="bg-muted p-4 rounded-lg">
+              <div className="text-3xl font-bold text-primary">{surveys.length}</div>
+              <div className="text-sm text-muted-foreground">Total Surveys</div>
             </div>
-            <div className="bg-green-50 p-4 rounded-lg">
-              <div className="text-3xl font-bold text-green-700">{surveys.filter(s => s.isPublished).length}</div>
-              <div className="text-sm text-gray-600">Published</div>
+            <div className="bg-muted p-4 rounded-lg">
+              <div className="text-3xl font-bold text-primary">{surveys.filter(s => s.isPublished).length}</div>
+              <div className="text-sm text-muted-foreground">Published</div>
             </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
         
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h3 className="text-xl font-semibold text-gray-800 mb-4">Resources</h3>
-          <ul className="space-y-3">
-            <li>
-              <Link href="/dashboard/help">
-                <div className="text-blue-600 hover:text-blue-800 hover:underline">
+        <Card>
+          <CardHeader>
+            <CardTitle>Resources</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="space-y-3">
+              <li>
+                <Link href="/dashboard/help" className="text-primary hover:underline">
                   How to create effective surveys?
-                </div>
-              </Link>
-            </li>
-            <li>
-              <Link href="/dashboard/templates">
-                <div className="text-blue-600 hover:text-blue-800 hover:underline">
+                </Link>
+              </li>
+              <li>
+                <Link href="/dashboard/templates" className="text-primary hover:underline">
                   Survey templates
-                </div>
-              </Link>
-            </li>
-            <li>
-              <Link href="/dashboard/help/response-analysis">
-                <div className="text-blue-600 hover:text-blue-800 hover:underline">
+                </Link>
+              </li>
+              <li>
+                <Link href="/dashboard/help/response-analysis" className="text-primary hover:underline">
                   Understanding response analytics
-                </div>
-              </Link>
-            </li>
-          </ul>
-        </div>
+                </Link>
+              </li>
+            </ul>
+          </CardContent>
+        </Card>
       </div>
+
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete your survey and all its responses.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete}>Delete</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={showPublishDialog} onOpenChange={setShowPublishDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Publish Survey?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Once published, this survey will be accessible to anyone with the link.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handlePublish}>Publish</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 } 
