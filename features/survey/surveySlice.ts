@@ -120,22 +120,13 @@ export const saveSurvey = createAsyncThunk(
     try {
       let savedSurvey: Survey;
       
-      if (survey.id) {
-        // Update existing survey
-        const surveyRef = doc(firestore, 'surveys', survey.id);
-        await updateDoc(surveyRef, {
-          ...survey,
-          updatedAt: Date.now()
-        });
-        savedSurvey = {
-          ...survey,
-          updatedAt: Date.now()
-        };
-      } else {
-        // Create new survey
+      if (survey.id && survey.id.startsWith('survey_')) {
+        // This is a new survey, create it
+        const { id, ...newSurveyData } = survey;
         const newSurvey = {
-          ...survey,
+          ...newSurveyData,
           createdAt: Date.now(),
+          updatedAt: Date.now(),
           isPublished: false
         };
         const docRef = await addDoc(collection(firestore, 'surveys'), newSurvey);
@@ -143,6 +134,17 @@ export const saveSurvey = createAsyncThunk(
           ...newSurvey,
           id: docRef.id
         };
+      } else if (survey.id) {
+        // This is an existing survey, update it
+        const surveyRef = doc(firestore, 'surveys', survey.id);
+        const surveyToUpdate = {
+          ...survey,
+          updatedAt: Date.now()
+        };
+        await updateDoc(surveyRef, surveyToUpdate);
+        savedSurvey = surveyToUpdate;
+      } else {
+        throw new Error("Survey has no ID and cannot be saved.");
       }
       
       return savedSurvey;

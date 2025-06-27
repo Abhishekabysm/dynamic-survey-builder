@@ -20,6 +20,7 @@ import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSo
 import { Question, QuestionType } from '../../../../features/survey/surveySlice';
 import NewSortableQuestionItem from '../../../../components/survey/NewSortableQuestionItem';
 import QuestionTypeSelector from '../../../../components/survey/QuestionTypeSelector';
+import SurveyPreview from '../../../../components/survey/SurveyPreview';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -120,9 +121,13 @@ export default function CreateSurvey() {
                   id="description"
                   value={currentSurvey.description}
                   onChange={(e) => dispatch(updateDescription(e.target.value))}
-                  rows={3}
                   placeholder="A short description of your survey..."
+                  maxLength={500}
+                  minRows={3}
                 />
+                <p className="text-sm text-muted-foreground text-right">
+                  {currentSurvey.description.length} / 500
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -178,14 +183,7 @@ export default function CreateSurvey() {
           </Card>
         </div>
       ) : (
-        <Card>
-          <CardHeader>
-            <CardTitle>Survey Preview</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {/* Implement survey preview here */}
-          </CardContent>
-        </Card>
+        <SurveyPreview survey={currentSurvey} />
       )}
     </div>
   );
