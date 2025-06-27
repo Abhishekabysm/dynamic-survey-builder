@@ -1,3 +1,12 @@
+'use client';
+
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { QuestionType } from '../../features/survey/surveySlice';
 
 // Icons for different question types
@@ -41,32 +50,23 @@ const questionTypeDetails = [
 ];
 
 interface QuestionTypeSelectorProps {
-  selectedType: QuestionType;
   onSelect: (type: QuestionType) => void;
+  selectedType: QuestionType;
 }
 
-export default function QuestionTypeSelector({ selectedType, onSelect }: QuestionTypeSelectorProps) {
+export default function QuestionTypeSelector({ onSelect, selectedType }: QuestionTypeSelectorProps) {
   return (
-    <div>
-      <h3 className="text-lg font-semibold text-gray-800 mb-3">Question Type</h3>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <Select onValueChange={onSelect} value={selectedType}>
+      <SelectTrigger className="w-[180px]">
+        <SelectValue placeholder="Select a question type" />
+      </SelectTrigger>
+      <SelectContent>
         {questionTypeDetails.map((type) => (
-          <button
-            key={type.value}
-            type="button"
-            onClick={() => onSelect(type.value)}
-            className={`p-6 text-left border rounded-xl transition-all duration-200 ${
-              selectedType === type.value
-                ? 'bg-white ring-2 ring-blue-500 shadow-lg'
-                : 'bg-gray-50 hover:bg-white hover:shadow-md'
-            }`}
-          >
-            {type.icon}
-            <h4 className="text-base font-bold text-gray-900">{type.label}</h4>
-            <p className="text-sm text-gray-500 mt-1">{type.description}</p>
-          </button>
+          <SelectItem key={type.value} value={type.value}>
+            {type.label}
+          </SelectItem>
         ))}
-      </div>
-    </div>
+      </SelectContent>
+    </Select>
   );
 } 

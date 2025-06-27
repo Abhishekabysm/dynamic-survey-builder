@@ -188,12 +188,13 @@ const surveySlice = createSlice({
   reducers: {
     initNewSurvey: (state, action: PayloadAction<{ userId: string }>) => {
       state.currentSurvey = {
-        title: 'Untitled Survey',
+        id: `survey_${Date.now()}`,
+        title: '',
         description: '',
         questions: [],
+        isPublished: false,
         createdBy: action.payload.userId,
         createdAt: Date.now(),
-        isPublished: false,
       };
     },
     setCurrentSurvey: (state, action: PayloadAction<Survey | null>) => {

@@ -74,7 +74,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       <div className="flex min-h-screen w-full bg-muted/40">
         {!isMobile && (
           <div className={`hidden md:block border-r bg-background transition-all duration-300 ${isSidebarCollapsed ? 'w-16' : 'w-64'}`}>
-            <DashboardSidebar isCollapsed={isSidebarCollapsed} />
+            <DashboardSidebar isCollapsed={isSidebarCollapsed} onCollapse={toggleSidebar} />
           </div>
         )}
         <div className="flex flex-col flex-1">
@@ -88,14 +88,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                   </Button>
                 </SheetTrigger>
                 <SheetContent side="left" className="sm:max-w-xs p-0">
-                  <DashboardSidebar isCollapsed={false} />
+                  <DashboardSidebar isCollapsed={false} onCollapse={() => {}} />
                 </SheetContent>
               </Sheet>
             )}
-             <Button size="icon" variant="outline" className="hidden md:flex" onClick={toggleSidebar}>
-              {isSidebarCollapsed ? <PanelRightClose className="h-5 w-5" /> : <PanelLeftClose className="h-5 w-5" />}
-              <span className="sr-only">Toggle Menu</span>
-            </Button>
             <div className="flex-1"></div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
