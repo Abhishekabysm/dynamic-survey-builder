@@ -23,7 +23,7 @@ export default function RootLayout({
         <Providers>
           <AuthHandler />
           {children}
-          <Toaster richColors />
+          <Toaster richColors position="top-right" />
         </Providers>
       </body>
     </html>
