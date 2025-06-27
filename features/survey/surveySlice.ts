@@ -234,15 +234,16 @@ const surveySlice = createSlice({
     },
     reorderQuestions: (state, action: PayloadAction<{ sourceIndex: number; destinationIndex: number }>) => {
       if (state.currentSurvey) {
-        const { sourceIndex, destinationIndex } = action.payload;
-        const questions = [...state.currentSurvey.questions];
-        const [movedQuestion] = questions.splice(sourceIndex, 1);
-        questions.splice(destinationIndex, 0, movedQuestion);
-        state.currentSurvey.questions = questions;
+        const items = Array.from(state.currentSurvey.questions);
+        const [reorderedItem] = items.splice(action.payload.sourceIndex, 1);
+        items.splice(action.payload.destinationIndex, 0, reorderedItem);
+        state.currentSurvey.questions = items;
       }
     },
-    clearCurrentSurvey: (state) => {
+    resetCurrentSurvey: (state) => {
       state.currentSurvey = null;
+      state.isLoading = false;
+      state.error = null;
     },
     clearSurveyError: (state) => {
       state.error = null;
@@ -334,7 +335,7 @@ export const {
   updateQuestion,
   removeQuestion,
   reorderQuestions,
-  clearCurrentSurvey,
+  resetCurrentSurvey,
   clearSurveyError,
 } = surveySlice.actions;
 
