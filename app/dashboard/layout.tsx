@@ -1,7 +1,7 @@
 'use client';
 
 import { ReactNode, useEffect, useState, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useAppSelector, useAppDispatch } from '../../lib/store';
 import { logoutUser } from '../../features/auth/authSlice';
@@ -37,9 +37,58 @@ const UserIcon = () => (
   </svg>
 );
 
+const ChevronLeftIcon = (props: { className?: string }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" className={`h-6 w-6 ${props.className}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+  </svg>
+);
+
+const MenuIcon = (props: { className?: string }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" className={`h-6 w-6 ${props.className}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" />
+  </svg>
+);
+
 const ChevronDownIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+  </svg>
+);
+
+const PanelCloseIcon = (props: { className?: string }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={props.className}
+  >
+    <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+    <line x1="9" x2="9" y1="3" y2="21" />
+    <path d="m14 15-3-3 3-3" />
+  </svg>
+);
+
+const PlusIcon = (props: { className?: string }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={props.className}
+  >
+    <path d="M5 12h14" />
+    <path d="M12 5v14" />
   </svg>
 );
 
@@ -53,6 +102,8 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const dispatch = useAppDispatch();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     // Redirect to login if not authenticated
@@ -94,70 +145,117 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     );
   }
 
+  const getLinkClasses = (path: string) => {
+    const isActive = pathname === path;
+    return `flex items-center p-3 rounded-lg ${
+      isActive
+        ? 'bg-gray-200 text-gray-900 font-semibold'
+        : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+    } ${isSidebarCollapsed ? 'justify-center' : ''}`;
+  };
+
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex min-h-screen bg-white">
       {/* Sidebar */}
-      <div className="w-64 bg-white shadow-md fixed inset-y-0 left-0 z-10 overflow-y-auto">
-        <div className="px-6 pt-8 pb-6 border-b">
-          <h1 className="text-2xl font-bold text-blue-600">Survey Builder</h1>
-          <p className="text-gray-500 text-sm mt-1">Welcome back!</p>
-        </div>
-        
-        <nav className="mt-6 px-4">
-          <ul className="space-y-1">
-            <li>
-              <Link 
-                href="/dashboard" 
-                className="flex items-center px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-lg"
-              >
+      <div className={`fixed inset-y-0 left-0 z-30 transition-all duration-300 ${isSidebarCollapsed ? 'w-20' : 'w-64'}`}>
+        <div className="flex h-full flex-col bg-gray-50 border-r border-gray-200">
+          <div className="flex h-[65px] items-center justify-between border-b border-gray-200 px-4">
+            <div className={`font-bold text-gray-800 ${isSidebarCollapsed ? 'hidden' : 'block'}`}>
+              Survey Builder
+            </div>
+            <div className={`font-bold text-gray-800 ${!isSidebarCollapsed ? 'hidden' : 'block'}`}>
+              SB
+            </div>
+            <button
+              onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+              className="rounded-lg p-1 text-gray-500 hover:bg-gray-200"
+            >
+              <PanelCloseIcon className={`h-6 w-6 transition-transform duration-300 ${isSidebarCollapsed ? 'rotate-180' : ''}`} />
+            </button>
+          </div>
+
+          <nav className="flex-grow space-y-2 p-4">
+            <Link
+              href="/dashboard/surveys/create"
+              className={`group relative flex items-center rounded-lg p-3 font-semibold text-white bg-blue-600 hover:bg-blue-700 ${isSidebarCollapsed ? 'justify-center' : ''}`}
+            >
+              <PlusIcon className="h-5 w-5" />
+              <span className={`ml-3 ${isSidebarCollapsed ? 'hidden' : 'block'}`}>Create Survey</span>
+              {isSidebarCollapsed && (
+                <span className="absolute left-full ml-4 w-max rounded-md bg-gray-800 px-2 py-1 text-xs text-white opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                  Create Survey
+                </span>
+              )}
+            </Link>
+
+            <div className="pt-2">
+              <Link href="/dashboard" className={`${getLinkClasses('/dashboard')} group relative`}>
                 <DashboardIcon />
-                <span className="ml-3">Dashboard</span>
+                <span className={`ml-3 ${isSidebarCollapsed ? 'hidden' : 'block'}`}>Dashboard</span>
+                {isSidebarCollapsed && (
+                  <span className="absolute left-full ml-4 w-max rounded-md bg-gray-800 px-2 py-1 text-xs text-white opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                    Dashboard
+                  </span>
+                )}
               </Link>
-            </li>
-            <li>
-              <Link 
-                href="/dashboard/surveys" 
-                className="flex items-center px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-lg"
-              >
+              <Link href="/dashboard/surveys" className={`${getLinkClasses('/dashboard/surveys')} group relative`}>
                 <SurveyIcon />
-                <span className="ml-3">My Surveys</span>
+                <span className={`ml-3 ${isSidebarCollapsed ? 'hidden' : 'block'}`}>My Surveys</span>
+                {isSidebarCollapsed && (
+                  <span className="absolute left-full ml-4 w-max rounded-md bg-gray-800 px-2 py-1 text-xs text-white opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                    My Surveys
+                  </span>
+                )}
               </Link>
-            </li>
-            <li>
-              <Link 
-                href="/dashboard/responses" 
-                className="flex items-center px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-lg"
-              >
+              <Link href="/dashboard/responses" className={`${getLinkClasses('/dashboard/responses')} group relative`}>
                 <ResponsesIcon />
-                <span className="ml-3">Responses</span>
+                <span className={`ml-3 ${isSidebarCollapsed ? 'hidden' : 'block'}`}>Responses</span>
+                {isSidebarCollapsed && (
+                  <span className="absolute left-full ml-4 w-max rounded-md bg-gray-800 px-2 py-1 text-xs text-white opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                    Responses
+                  </span>
+                )}
               </Link>
-            </li>
-          </ul>
-        </nav>
-        
-        <div className="absolute bottom-0 w-full border-t p-4">
-          <button 
-            onClick={handleLogout}
-            className="flex items-center px-4 py-2 text-gray-700 hover:bg-red-50 hover:text-red-700 rounded-lg w-full"
-          >
-            <LogoutIcon />
-            <span className="ml-3">Logout</span>
-          </button>
+            </div>
+          </nav>
+
+          <div className="border-t border-gray-200 p-4">
+            <button
+              onClick={handleLogout}
+              className={`group relative flex w-full items-center rounded-lg p-3 text-gray-600 hover:bg-gray-100 hover:text-gray-900 ${isSidebarCollapsed ? 'justify-center' : ''}`}
+            >
+              <LogoutIcon />
+              <span className={`ml-3 ${isSidebarCollapsed ? 'hidden' : 'block'}`}>Logout</span>
+              {isSidebarCollapsed && (
+                <span className="absolute left-full ml-4 w-max rounded-md bg-gray-800 px-2 py-1 text-xs text-white opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                  Logout
+                </span>
+              )}
+            </button>
+          </div>
         </div>
       </div>
       
       {/* Content */}
-      <div className="flex-1 pl-64">
-        <header className="bg-white shadow-sm py-4 px-6 flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-gray-800">Dashboard</h2>
+      <div className={`flex-1 transition-all duration-300 ${isSidebarCollapsed ? 'pl-20' : 'pl-64'}`}>
+        <header className={`bg-white/60 backdrop-blur-sm py-4 px-6 flex items-center justify-between fixed top-0 right-0 z-20 transition-all duration-300 ${isSidebarCollapsed ? 'left-20' : 'left-64'}`}>
+          <div className="flex items-center">
+            <button 
+              onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)} 
+              className="p-1 rounded-full text-gray-600 hover:bg-gray-100 lg:hidden"
+            >
+              <MenuIcon />
+            </button>
+            <h2 className="text-xl font-semibold text-gray-800 ml-2">Dashboard</h2>
+          </div>
           
           {/* User dropdown */}
           <div className="relative" ref={dropdownRef}>
             <button 
-              className="flex items-center text-gray-700 hover:text-blue-600 focus:outline-none"
+              className="flex items-center text-gray-700 hover:text-gray-900 focus:outline-none"
               onClick={() => setDropdownOpen(!dropdownOpen)}
             >
-              <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mr-2">
+              <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 mr-2">
                 {user.email ? user.email[0].toUpperCase() : 'U'}
               </div>
               <span className="text-sm font-medium">{user.email}</span>
@@ -165,7 +263,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             </button>
             
             {dropdownOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10">
+              <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 border border-gray-100">
                 <div className="px-4 py-2 text-xs text-gray-500">
                   Signed in as
                   <div className="font-medium text-gray-900 truncate">{user.email}</div>
@@ -183,7 +281,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           </div>
         </header>
         
-        <main className="p-6">
+        <main className="p-6 mt-16">
           {children}
         </main>
       </div>
