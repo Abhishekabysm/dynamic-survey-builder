@@ -1,28 +1,32 @@
 'use client';
 
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { CheckCircle } from 'lucide-react';
 
 export default function ThankYouPage() {
-  const params = useParams();
-  const surveyId = params.surveyId as string;
-
   return (
-    <div className="flex flex-col justify-center items-center min-h-screen bg-gray-50 text-center px-4">
-      <div className="bg-white p-10 rounded-xl shadow-lg">
-        <svg className="h-16 w-16 text-green-500 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-        <h1 className="text-3xl font-bold text-gray-800">Thank You!</h1>
-        <p className="text-gray-600 mt-2 mb-6">
-          Your response has been submitted successfully.
-        </p>
-        <Link href="/">
-          <div className="text-blue-600 hover:text-blue-800 font-medium">
-            Go back to the homepage
+    <div className="bg-muted min-h-screen flex items-center justify-center p-4">
+      <Card className="w-full max-w-lg text-center">
+        <CardHeader>
+          <div className="mx-auto bg-primary text-primary-foreground rounded-full h-16 w-16 flex items-center justify-center mb-4">
+            <CheckCircle className="h-10 w-10" />
           </div>
-        </Link>
-      </div>
+          <CardTitle className="text-3xl">Thank You!</CardTitle>
+          <CardDescription className="text-lg pt-2">
+            Your response has been successfully submitted.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p className="text-muted-foreground">
+            We appreciate your feedback. You can now close this window.
+          </p>
+          <Button asChild className="mt-6">
+            <Link href="/">Return to Homepage</Link>
+          </Button>
+        </CardContent>
+      </Card>
     </div>
   );
 } 

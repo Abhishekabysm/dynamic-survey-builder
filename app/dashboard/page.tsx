@@ -17,6 +17,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import {
@@ -31,26 +32,8 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { MoreHorizontal, PlusCircle, Trash2, Share2, Edit, BarChart2, Eye } from 'lucide-react';
-
-// Icons
-const CreateIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-  </svg>
-);
-
-const DeleteIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-4v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-  </svg>
-);
-
-const ShareIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12s-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.368a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
-  </svg>
-);
+import { MoreHorizontal, PlusCircle, Trash2, Edit, BarChart2, Link as LinkIcon, ExternalLink, UploadCloud } from 'lucide-react';
+import { toast } from 'sonner';
 
 export default function Dashboard() {
   const { user } = useAppSelector((state) => state.auth);
@@ -82,11 +65,17 @@ export default function Dashboard() {
     }
   };
 
-  const handleShareSurvey = (surveyId: string) => {
+  const handleCopyLink = (surveyId: string) => {
     const link = `${window.location.origin}/survey/${surveyId}`;
-    navigator.clipboard.writeText(link)
-      .then(() => alert('Survey link copied to clipboard!'))
-      .catch(() => alert('Failed to copy link.'));
+    navigator.clipboard.writeText(link).then(() => {
+      toast.success("Link Copied", {
+        description: "The survey link has been copied to your clipboard.",
+      });
+    }).catch(err => {
+      toast.error("Failed to copy link", {
+        description: "Could not copy link to clipboard.",
+      });
+    });
   };
 
   return (
@@ -165,40 +154,45 @@ export default function Dashboard() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        {survey.isPublished ? (
-                          <>
-                            <DropdownMenuItem onClick={() => handleShareSurvey(survey.id!)}>
-                              <Share2 className="mr-2 h-4 w-4" />
-                              Share
-                            </DropdownMenuItem>
-                            <DropdownMenuItem asChild>
-                              <Link href={`/dashboard/surveys/${survey.id}/results`}>
-                                <BarChart2 className="mr-2 h-4 w-4" />
-                                Results
-                              </Link>
-                            </DropdownMenuItem>
-                          </>
-                        ) : (
+                          <DropdownMenuItem asChild>
+                            <Link href={`/dashboard/surveys/${survey.id}/results`}>
+                              <BarChart2 className="mr-2 h-4 w-4" />
+                              Results
+                            </Link>
+                          </DropdownMenuItem>
+                          {!survey.isPublished && (
+                              <DropdownMenuItem
+                                onClick={() => {
+                                  setSelectedSurveyId(survey.id!);
+                                  setShowPublishDialog(true);
+                                }}
+                              >
+                                <UploadCloud className="mr-2 h-4 w-4" />
+                                Publish
+                              </DropdownMenuItem>
+                          )}
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem onClick={() => handleCopyLink(survey.id!)} disabled={!survey.isPublished}>
+                            <LinkIcon className="mr-2 h-4 w-4" />
+                            Copy Link
+                          </DropdownMenuItem>
+                          <DropdownMenuItem asChild disabled={!survey.isPublished}>
+                            <Link href={`/survey/${survey.id}`} target="_blank">
+                              <ExternalLink className="mr-2 h-4 w-4" />
+                              View Live Survey
+                            </Link>
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
                           <DropdownMenuItem
                             onClick={() => {
                               setSelectedSurveyId(survey.id!);
-                              setShowPublishDialog(true);
+                              setShowDeleteDialog(true);
                             }}
+                            className="text-destructive"
                           >
-                            <Eye className="mr-2 h-4 w-4" />
-                            Publish
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Delete
                           </DropdownMenuItem>
-                        )}
-                        <DropdownMenuItem
-                          onClick={() => {
-                            setSelectedSurveyId(survey.id!);
-                            setShowDeleteDialog(true);
-                          }}
-                          className="text-red-600"
-                        >
-                          <Trash2 className="mr-2 h-4 w-4" />
-                          Delete
-                        </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </CardFooter>
@@ -266,7 +260,7 @@ export default function Dashboard() {
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete your survey and all its responses.
+              This action cannot be undone. This will permanently delete the survey.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -279,9 +273,9 @@ export default function Dashboard() {
       <AlertDialog open={showPublishDialog} onOpenChange={setShowPublishDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Publish Survey?</AlertDialogTitle>
+            <AlertDialogTitle>Publish Survey</AlertDialogTitle>
             <AlertDialogDescription>
-              Once published, this survey will be accessible to anyone with the link.
+              This survey will be publicly available. Are you sure you want to publish it?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
