@@ -5,13 +5,6 @@ import Link from 'next/link';
 import { useAppSelector, useAppDispatch } from '@/lib/store';
 import { fetchUserSurveys, deleteSurvey, publishSurvey } from '@/features/survey/surveySlice';
 
-// Icons
-const CreateIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-  </svg>
-);
-
 const DeleteIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-4v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -24,14 +17,15 @@ const ShareIcon = () => (
   </svg>
 );
 
-export default function Dashboard() {
+export default function AllSurveysPage() {
   const { user } = useAppSelector((state) => state.auth);
   const { surveys, isLoading } = useAppSelector((state) => state.survey);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
+    // Surveys are already fetched by the main dashboard page,
+    // but we can re-fetch here in case the user navigates directly to this page.
     if (user && user.emailVerified) {
-      console.log('Fetching surveys for user:', user.uid);
       dispatch(fetchUserSurveys(user.uid));
     }
   }, [dispatch, user]);
@@ -57,24 +51,16 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <div className="flex justify-between items-center mb-5">
-          <h2 className="text-2xl font-bold text-gray-800">Welcome to Survey Builder</h2>
-          <Link href="/dashboard/surveys/create">
-            <div className="bg-blue-600 hover:bg-blue-700 text-white flex items-center px-4 py-2 rounded-lg shadow-sm transition-colors">
-              <CreateIcon />
-              <span className="ml-2">Create Survey</span>
-            </div>
-          </Link>
-        </div>
-        <p className="text-gray-600">
-          Get started by creating a new survey or checking your existing ones.
-        </p>
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-bold text-gray-800">All Surveys</h1>
+        <Link href="/dashboard">
+          <div className="text-blue-600 hover:text-blue-800">
+            &larr; Back to Dashboard
+          </div>
+        </Link>
       </div>
 
       <div className="bg-white rounded-lg shadow-md p-6">
-        <h3 className="text-xl font-semibold text-gray-800 mb-4">Your Recent Surveys</h3>
-        
         {isLoading ? (
           <div className="flex justify-center py-8">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
@@ -90,8 +76,8 @@ export default function Dashboard() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {surveys.slice(0, 6).map((survey) => (
-              <div key={survey.id} className="border rounded-lg p-4 bg-white hover:shadow-lg transition-shadow flex flex-col justify-between">
+            {surveys.map((survey) => (
+              <div key={survey.id} className="border rounded-lg p-4 hover:shadow-lg transition-shadow flex flex-col justify-between">
                 <div>
                   <h4 className="font-medium text-lg text-gray-800 mb-1">{survey.title}</h4>
                   <p className="text-sm text-gray-500 mb-3 line-clamp-2 h-10">{survey.description}</p>
@@ -109,7 +95,6 @@ export default function Dashboard() {
                     <button onClick={() => handleDeleteSurvey(survey.id!)} className="text-red-500 hover:text-red-700" title="Delete Survey">
                       <DeleteIcon />
                     </button>
-                    
                     {survey.isPublished ? (
                       <>
                         <Link href={`/dashboard/surveys/${survey.id}/results`}>
@@ -136,59 +121,6 @@ export default function Dashboard() {
             ))}
           </div>
         )}
-        
-        {surveys.length > 6 && (
-          <div className="mt-4 text-center">
-            <Link href="/dashboard/surveys">
-              <div className="text-blue-600 hover:text-blue-800">
-                View all surveys
-              </div>
-            </Link>
-          </div>
-        )}
-      </div>
-      
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h3 className="text-xl font-semibold text-gray-800 mb-4">Quick Stats</h3>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="bg-blue-50 p-4 rounded-lg">
-              <div className="text-3xl font-bold text-blue-700">{surveys.length}</div>
-              <div className="text-sm text-gray-600">Total Surveys</div>
-            </div>
-            <div className="bg-green-50 p-4 rounded-lg">
-              <div className="text-3xl font-bold text-green-700">{surveys.filter(s => s.isPublished).length}</div>
-              <div className="text-sm text-gray-600">Published</div>
-            </div>
-          </div>
-        </div>
-        
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h3 className="text-xl font-semibold text-gray-800 mb-4">Resources</h3>
-          <ul className="space-y-3">
-            <li>
-              <Link href="/dashboard/help">
-                <div className="text-blue-600 hover:text-blue-800 hover:underline">
-                  How to create effective surveys?
-                </div>
-              </Link>
-            </li>
-            <li>
-              <Link href="/dashboard/templates">
-                <div className="text-blue-600 hover:text-blue-800 hover:underline">
-                  Survey templates
-                </div>
-              </Link>
-            </li>
-            <li>
-              <Link href="/dashboard/help/response-analysis">
-                <div className="text-blue-600 hover:text-blue-800 hover:underline">
-                  Understanding response analytics
-                </div>
-              </Link>
-            </li>
-          </ul>
-        </div>
       </div>
     </div>
   );

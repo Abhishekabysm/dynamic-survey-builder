@@ -12,7 +12,8 @@ import {
   updateQuestion,
   reorderQuestions,
   createQuestion,
-  saveSurvey 
+  saveSurvey,
+  clearCurrentSurvey
 } from '../../../../features/survey/surveySlice';
 import { 
   DndContext, 
@@ -84,11 +85,15 @@ export default function CreateSurvey() {
 
   const handleSaveSurvey = async () => {
     if (currentSurvey && user) {
-      await dispatch(saveSurvey({
+      const result = await dispatch(saveSurvey({
         ...currentSurvey,
         createdBy: user.uid
       }));
-      router.push('/dashboard/surveys');
+
+      if (result.meta.requestStatus === 'fulfilled') {
+        dispatch(clearCurrentSurvey());
+        router.push('/dashboard');
+      }
     }
   };
 
@@ -114,7 +119,7 @@ export default function CreateSurvey() {
           <button
             onClick={handleSaveSurvey}
             disabled={isLoading}
-            className={`px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg ${
+            className={`px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg ${
               isLoading ? 'opacity-70 cursor-not-allowed' : ''
             }`}
           >
@@ -134,7 +139,7 @@ export default function CreateSurvey() {
               type="text"
               value={currentSurvey.title}
               onChange={(e) => dispatch(updateTitle(e.target.value))}
-              className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Enter survey title"
             />
           </div>
@@ -148,7 +153,7 @@ export default function CreateSurvey() {
               value={currentSurvey.description}
               onChange={(e) => dispatch(updateDescription(e.target.value))}
               rows={3}
-              className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Enter survey description"
             />
           </div>
@@ -184,9 +189,9 @@ export default function CreateSurvey() {
               </div>
             )}
 
-            <div className="mt-6 border-t pt-4">
-              <div className="flex flex-col sm:flex-row sm:items-center">
-                <div className="mb-3 sm:mb-0 sm:mr-4 sm:flex-grow">
+            <div className="mt-6 border-t pt-6">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                <div className="mb-3 sm:mb-0">
                   <QuestionTypeSelector 
                     selectedType={selectedQuestionType} 
                     onSelect={setSelectedQuestionType} 
@@ -194,7 +199,7 @@ export default function CreateSurvey() {
                 </div>
                 <button
                   onClick={handleAddQuestion}
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg"
+                  className="w-full sm:w-auto px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg"
                 >
                   Add Question
                 </button>
@@ -203,10 +208,10 @@ export default function CreateSurvey() {
           </div>
         </div>
       ) : (
-        <div className="bg-white rounded-lg shadow-md p-6 space-y-6">
+        <div className="bg-white rounded-lg shadow-md p-6 lg:p-8 space-y-6">
           <div className="text-center mb-6">
-            <h2 className="text-xl font-bold">{currentSurvey.title}</h2>
-            <p className="text-gray-600 mt-2">{currentSurvey.description}</p>
+            <h2 className="text-2xl font-bold">{currentSurvey.title}</h2>
+            <p className="text-gray-600 mt-2 max-w-xl mx-auto">{currentSurvey.description}</p>
           </div>
           
           <div className="space-y-8">
@@ -240,7 +245,7 @@ export default function CreateSurvey() {
                   <div className="mt-2">
                     <input
                       type="text"
-                      className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                      className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-gray-50"
                       placeholder="Enter your answer"
                       disabled
                     />

@@ -60,9 +60,9 @@ NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
 - [x] Response handling slice
 - [x] Dashboard layout and navigation
 - [x] Survey creation interface with drag-and-drop
-- [ ] Public survey response page
-- [ ] Survey results analytics dashboard
-- [ ] Mobile optimization
+- [x] Public survey response page
+- [x] Survey results analytics dashboard
+- [x] Mobile optimization
 
 
 

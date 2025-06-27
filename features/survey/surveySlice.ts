@@ -238,6 +238,9 @@ const surveySlice = createSlice({
         state.currentSurvey.questions = questions;
       }
     },
+    clearCurrentSurvey: (state) => {
+      state.currentSurvey = null;
+    },
     clearSurveyError: (state) => {
       state.error = null;
     },
@@ -328,6 +331,7 @@ export const {
   updateQuestion,
   removeQuestion,
   reorderQuestions,
+  clearCurrentSurvey,
   clearSurveyError,
 } = surveySlice.actions;
 
