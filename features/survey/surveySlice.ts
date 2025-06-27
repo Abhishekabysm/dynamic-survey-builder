@@ -255,6 +255,7 @@ const surveySlice = createSlice({
       // Fetch single survey
       .addCase(fetchSurveyById.pending, (state) => {
         state.isLoading = true;
+        state.currentSurvey = null;
         state.error = null;
       })
       .addCase(fetchSurveyById.fulfilled, (state, action) => {

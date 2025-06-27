@@ -11,21 +11,8 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   
-  const router = useRouter();
   const dispatch = useAppDispatch();
-  const { isLoading, error, user, needsEmailVerification } = useAppSelector((state) => state.auth);
-
-  useEffect(() => {
-    // This effect handles redirection based on the user's auth state.
-    if (user) {
-      // It runs after login or if a user is already logged in.
-      if (needsEmailVerification) {
-        router.push('/verify-email');
-      } else {
-        router.push('/dashboard');
-      }
-    }
-  }, [user, needsEmailVerification, router]);
+  const { isLoading, error } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
     // Clear previous errors when the component mounts
@@ -34,7 +21,7 @@ export default function Login() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Dispatch the login action. The useEffect above will handle the redirect.
+    // The AuthHandler will manage redirection after the state update.
     await dispatch(loginUser({ email, password }));
   };
 
