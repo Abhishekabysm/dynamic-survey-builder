@@ -15,7 +15,7 @@ const PUBLIC_ROUTES = ['/'];
  * the user's authentication state. It does not render any UI.
  */
 export const AuthHandler = () => {
-  const { user, needsEmailVerification, isLoading } = useAppSelector((state) => state.auth);
+    const { user, needsEmailVerification, isInitialLoading: isLoading } = useAppSelector((state) => state.auth);
   const router = useRouter();
   const pathname = usePathname();
 
