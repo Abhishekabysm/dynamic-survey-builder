@@ -5,7 +5,7 @@ import { useAppSelector, useAppDispatch } from '@/lib/store';
 import { fetchUserSurveys, Survey } from '@/features/survey/surveySlice';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { firestore } from '@/firebase/config';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -56,7 +56,54 @@ export default function ResponsesPage() {
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">
-      <Card>
+      <div className="space-y-4 md:hidden">
+        <div className="space-y-1">
+          <h1 className="text-2xl font-bold tracking-tight">Survey Responses</h1>
+          <p className="text-muted-foreground">View responses for your surveys.</p>
+        </div>
+        {allLoading ? (
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+            <p className="ml-4">Loading survey responses...</p>
+          </div>
+        ) : surveysWithResponses.length > 0 ? (
+          <div className="grid grid-cols-1 gap-4">
+            {surveysWithResponses.map((survey) => (
+              <Card key={survey.id}>
+                <CardHeader>
+                  <CardTitle>{survey.title}</CardTitle>
+                  <CardDescription>
+                    <Badge variant={survey.isPublished ? 'default' : 'secondary'}>
+                      {survey.isPublished ? 'Published' : 'Draft'}
+                    </Badge>
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p>
+                    <span className="font-medium">Responses:</span> {survey.responseCount}
+                  </p>
+                </CardContent>
+                <CardFooter>
+                  <Button asChild variant="outline" size="sm" disabled={survey.responseCount === 0} className="w-full">
+                    <Link href={`/dashboard/surveys/${survey.id}/results`}>
+                      <Eye className="mr-2 h-4 w-4" /> View Results
+                    </Link>
+                  </Button>
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-10">
+            <p className="text-muted-foreground">You have no surveys yet.</p>
+            <Button asChild className="mt-4">
+              <Link href="/dashboard/surveys/create">Create a Survey</Link>
+            </Button>
+          </div>
+        )}
+      </div>
+
+      <Card className="hidden md:block">
         <CardHeader>
           <CardTitle>Survey Responses</CardTitle>
           <CardDescription>View responses for your surveys.</CardDescription>
@@ -90,7 +137,7 @@ export default function ResponsesPage() {
                     <TableCell className="text-right">
                       <Button asChild variant="outline" size="sm" disabled={survey.responseCount === 0}>
                         <Link href={`/dashboard/surveys/${survey.id}/results`}>
-                           <Eye className="mr-2 h-4 w-4" /> View Results
+                          <Eye className="mr-2 h-4 w-4" /> View Results
                         </Link>
                       </Button>
                     </TableCell>
@@ -110,4 +157,4 @@ export default function ResponsesPage() {
       </Card>
     </div>
   );
-} 
+}
