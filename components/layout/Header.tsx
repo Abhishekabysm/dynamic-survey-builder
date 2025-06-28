@@ -19,10 +19,19 @@ export const Header = () => {
   const handleScroll = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
     e.preventDefault();
     const href = e.currentTarget.href;
-    const targetId = href.replace(/.*#/, '');
-    const elem = document.getElementById(targetId);
-    if (elem) {
-      elem.scrollIntoView({
+    const hash = new URL(href).hash;
+
+    if (hash) {
+      const targetId = hash.replace('#', '');
+      const elem = document.getElementById(targetId);
+      if (elem) {
+        elem.scrollIntoView({
+          behavior: 'smooth',
+        });
+      }
+    } else {
+      window.scrollTo({
+        top: 0,
         behavior: 'smooth',
       });
     }
@@ -38,6 +47,11 @@ export const Header = () => {
           SurveyBuilder
         </Link>
         <nav className="hidden md:flex items-center gap-2">
+          <Button variant="ghost" asChild>
+            <Link href="/" onClick={handleScroll}>
+              Home
+            </Link>
+          </Button>
           <Button variant="ghost" asChild>
             <Link href="/#features" onClick={handleScroll}>
               Features
