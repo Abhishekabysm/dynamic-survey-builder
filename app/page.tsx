@@ -229,17 +229,22 @@ export default function Home() {
                 valuable insights.
               </p>
             </div>
-            <div className="mt-20 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
               {features.map((feature) => (
-                <Card key={feature.title} className="flex flex-col">
-                  <CardHeader className="flex items-center gap-4">
+                <div
+                  key={feature.title}
+                  className="group rounded-lg border bg-white p-6 shadow-sm transition-all hover:shadow-lg dark:bg-gray-950"
+                >
+                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-gray-100 group-hover:bg-blue-100 dark:bg-gray-800 dark:group-hover:bg-blue-900">
                     {feature.icon}
-                    <CardTitle>{feature.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-gray-600">{feature.description}</p>
-                  </CardContent>
-                </Card>
+                  </div>
+                  <h3 className="mb-2 text-xl font-semibold text-blue-900">
+                    {feature.title}
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-400">
+                    {feature.description}
+                  </p>
+                </div>
               ))}
             </div>
           </div>
