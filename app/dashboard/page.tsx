@@ -130,74 +130,141 @@ export default function Dashboard() {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-              {surveys.slice(0, 6).map((survey) => (
-                <Card key={survey.id}>
-                  <CardHeader>
-                    <CardTitle className="truncate">{survey.title}</CardTitle>
+              {surveys.slice(0, 6).map((survey, index) => (
+                <div key={survey.id} className="md:p-0 p-4 border-b md:border-none last:border-b-0 md:last:border-b-0">
+                  <div className="md:hidden flex justify-between items-center">
+                    <h3 className="font-semibold truncate">{survey.title}</h3>
                     <Badge variant={survey.isPublished ? 'default' : 'secondary'}>
                       {survey.isPublished ? 'Published' : 'Draft'}
                     </Badge>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground line-clamp-2 h-10">{survey.description}</p>
-                  </CardContent>
-                  <CardFooter className="flex justify-between">
-                    <Link href={`/dashboard/surveys/${survey.id}`}>
-                      <Button variant="outline" size="sm">
-                        <Edit className="mr-2 h-4 w-4" /> Edit
-                      </Button>
-                    </Link>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                          <span className="sr-only">Open menu</span>
-                          <MoreHorizontal className="h-4 w-4" />
+                  </div>
+                  <Card className="hidden md:block">
+                    <CardHeader>
+                      <CardTitle className="truncate">{survey.title}</CardTitle>
+                      <Badge variant={survey.isPublished ? 'default' : 'secondary'}>
+                        {survey.isPublished ? 'Published' : 'Draft'}
+                      </Badge>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm text-muted-foreground line-clamp-2 h-10">{survey.description}</p>
+                    </CardContent>
+                    <CardFooter className="flex justify-between">
+                      <Link href={`/dashboard/surveys/${survey.id}`}>
+                        <Button variant="outline" size="sm">
+                          <Edit className="mr-2 h-4 w-4" /> Edit
                         </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                          <DropdownMenuItem asChild>
-                            <Link href={`/dashboard/surveys/${survey.id}/results`}>
-                              <BarChart2 className="mr-2 h-4 w-4" />
-                              Results
-                            </Link>
-                          </DropdownMenuItem>
-                          {!survey.isPublished && (
-                              <DropdownMenuItem
-                                onClick={() => {
-                                  setSelectedSurveyId(survey.id!);
-                                  setShowPublishDialog(true);
-                                }}
-                              >
-                                <UploadCloud className="mr-2 h-4 w-4" />
-                                Publish
-                              </DropdownMenuItem>
-                          )}
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem onClick={(e) => handleCopyLink(e, survey.id!)} disabled={!survey.isPublished}>
-                            <LinkIcon className="mr-2 h-4 w-4" />
-                            Copy Link
-                          </DropdownMenuItem>
-                          <DropdownMenuItem asChild disabled={!survey.isPublished}>
-                            <Link href={`/survey/${survey.id}`} target="_blank">
-                              <ExternalLink className="mr-2 h-4 w-4" />
-                              View Live Survey
-                            </Link>
-                          </DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem
-                            onClick={() => {
-                              setSelectedSurveyId(survey.id!);
-                              setShowDeleteDialog(true);
-                            }}
-                            className="text-destructive"
-                          >
-                            <Trash2 className="mr-2 h-4 w-4" />
-                            Delete
-                          </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </CardFooter>
-                </Card>
+                      </Link>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" className="h-8 w-8 p-0">
+                            <span className="sr-only">Open menu</span>
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuItem asChild>
+                              <Link href={`/dashboard/surveys/${survey.id}/results`}>
+                                <BarChart2 className="mr-2 h-4 w-4" />
+                                Results
+                              </Link>
+                            </DropdownMenuItem>
+                            {!survey.isPublished && (
+                                <DropdownMenuItem
+                                  onClick={() => {
+                                    setSelectedSurveyId(survey.id!);
+                                    setShowPublishDialog(true);
+                                  }}
+                                >
+                                  <UploadCloud className="mr-2 h-4 w-4" />
+                                  Publish
+                                </DropdownMenuItem>
+                            )}
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onClick={(e) => handleCopyLink(e, survey.id!)} disabled={!survey.isPublished}>
+                              <LinkIcon className="mr-2 h-4 w-4" />
+                              Copy Link
+                            </DropdownMenuItem>
+                            <DropdownMenuItem asChild disabled={!survey.isPublished}>
+                              <Link href={`/survey/${survey.id}`} target="_blank">
+                                <ExternalLink className="mr-2 h-4 w-4" />
+                                View Live Survey
+                              </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              onClick={() => {
+                                setSelectedSurveyId(survey.id!);
+                                setShowDeleteDialog(true);
+                              }}
+                              className="text-destructive"
+                            >
+                              <Trash2 className="mr-2 h-4 w-4" />
+                              Delete
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </CardFooter>
+                  </Card>
+                   <div className="md:hidden mt-2">
+                    <p className="text-sm text-muted-foreground line-clamp-2">{survey.description}</p>
+                    <div className="flex justify-between items-center mt-4">
+                       <Link href={`/dashboard/surveys/${survey.id}`}>
+                        <Button variant="outline" size="sm">
+                          <Edit className="mr-2 h-4 w-4" /> Edit
+                        </Button>
+                      </Link>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" className="h-8 w-8 p-0">
+                            <span className="sr-only">Open menu</span>
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuItem asChild>
+                              <Link href={`/dashboard/surveys/${survey.id}/results`}>
+                                <BarChart2 className="mr-2 h-4 w-4" />
+                                Results
+                              </Link>
+                            </DropdownMenuItem>
+                            {!survey.isPublished && (
+                                <DropdownMenuItem
+                                  onClick={() => {
+                                    setSelectedSurveyId(survey.id!);
+                                    setShowPublishDialog(true);
+                                  }}
+                                >
+                                  <UploadCloud className="mr-2 h-4 w-4" />
+                                  Publish
+                                </DropdownMenuItem>
+                            )}
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onClick={(e) => handleCopyLink(e, survey.id!)} disabled={!survey.isPublished}>
+                              <LinkIcon className="mr-2 h-4 w-4" />
+                              Copy Link
+                            </DropdownMenuItem>
+                             <DropdownMenuItem asChild disabled={!survey.isPublished}>
+                              <Link href={`/survey/${survey.id}`} target="_blank">
+                                <ExternalLink className="mr-2 h-4 w-4" />
+                                View Live Survey
+                              </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              onClick={() => {
+                                setSelectedSurveyId(survey.id!);
+                                setShowDeleteDialog(true);
+                              }}
+                              className="text-destructive"
+                            >
+                              <Trash2 className="mr-2 h-4 w-4" />
+                              Delete
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                  </div>
+                </div>
               ))}
             </div>
           )}
