@@ -57,7 +57,7 @@ const NavLink = ({ href, icon: Icon, label, isCollapsed, className }: { href: st
   return linkElement;
 };
 
-export function DashboardSidebar({ isCollapsed, onCollapse }: { isCollapsed: boolean, onCollapse: () => void }) {
+export function DashboardSidebar({ isCollapsed, onCollapse }: { isCollapsed: boolean, onCollapse?: () => void }) {
   return (
     <div className="flex h-full max-h-screen flex-col">
       <div className={cn("flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6", isCollapsed && "justify-center px-2")}>

@@ -78,17 +78,17 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           </div>
         )}
         <div className="flex flex-col flex-1">
-          <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
+          <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 md:static md:h-auto md:border-0 md:bg-transparent md:px-6">
             {isMobile && (
               <Sheet>
                 <SheetTrigger asChild>
-                  <Button size="icon" variant="outline" className="sm:hidden">
+                  <Button size="icon" variant="outline" className="md:hidden">
                     <Menu className="h-5 w-5" />
                     <span className="sr-only">Toggle Menu</span>
                   </Button>
                 </SheetTrigger>
                 <SheetContent side="left" className="sm:max-w-xs p-0">
-                  <DashboardSidebar isCollapsed={false} onCollapse={() => {}} />
+                  <DashboardSidebar isCollapsed={false} />
                 </SheetContent>
               </Sheet>
             )}
@@ -112,7 +112,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
               </DropdownMenuContent>
             </DropdownMenu>
           </header>
-          <main className="flex-1 overflow-y-auto p-4 sm:px-6 sm:py-0">
+          <main className="flex-1 overflow-y-auto p-4 md:px-6 md:py-0">
             {children}
           </main>
         </div>
