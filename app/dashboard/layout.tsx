@@ -25,7 +25,8 @@ import {
   Menu,
   User,
   PanelLeftClose,
-  PanelRightClose
+  PanelRightClose,
+  FileText
 } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { DashboardSidebar } from './sidebar';
@@ -79,17 +80,19 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           </div>
         )}
         <div className="flex flex-col flex-1">
-          <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 md:static md:h-auto md:border-0 md:bg-transparent md:px-6">
-            {isMobile && (
-               <Link href="/" className="font-semibold text-lg">
-                SurveyBuilder
+          <header className="sticky top-0 z-30 flex h-16 items-center justify-between gap-4 border-b bg-background px-4 sm:px-6">
+            {isMobile ? (
+               <Link href="/" className="flex items-center gap-2 font-semibold text-lg">
+                <FileText className="h-6 w-6 text-primary" />
+                <span>SurveyBuilder</span>
                </Link>
+            ) : (
+              <div />
             )}
-            <div className="flex-1"></div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="secondary" size="icon" className="rounded-full">
-                  <User className="h-5 w-5" />
+                <Button variant="secondary" className="rounded-full w-10 h-10 p-0 md:w-12 md:h-12">
+                  <User className="h-5 w-5 md:h-6 md:w-6" />
                   <span className="sr-only">Toggle user menu</span>
                 </Button>
               </DropdownMenuTrigger>

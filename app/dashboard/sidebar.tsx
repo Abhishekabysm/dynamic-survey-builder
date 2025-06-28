@@ -60,7 +60,7 @@ const NavLink = ({ href, icon: Icon, label, isCollapsed, className }: { href: st
 export function DashboardSidebar({ isCollapsed, onCollapse }: { isCollapsed: boolean, onCollapse?: () => void }) {
   return (
     <div className="flex h-full max-h-screen flex-col">
-      <div className={cn("flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6", isCollapsed && "justify-center px-2")}>
+      <div className={cn("flex h-16 items-center border-b px-4", isCollapsed && "justify-center px-2")}>
         <Link href="/" className={cn("flex items-center gap-2 font-semibold", isCollapsed && "hidden")}>
           <span className="">Survey Builder</span>
         </Link>
@@ -81,12 +81,6 @@ export function DashboardSidebar({ isCollapsed, onCollapse }: { isCollapsed: boo
           <NavLink href="/dashboard" icon={LayoutDashboard} label="Dashboard" isCollapsed={isCollapsed} />
           <NavLink href="/dashboard/surveys" icon={FileText} label="My Surveys" isCollapsed={isCollapsed} />
           <NavLink href="/dashboard/responses" icon={BarChart2} label="Responses" isCollapsed={isCollapsed} />
-        </nav>
-      </div>
-      <div className="mt-auto p-4 border-t">
-        <nav className={cn("grid gap-1 px-2 text-sm font-medium", isCollapsed && "justify-items-center")}>
-          <NavLink href="/dashboard/settings" icon={Settings} label="Settings" isCollapsed={isCollapsed} />
-          <NavLink href="/dashboard/help" icon={HelpCircle} label="Help" isCollapsed={isCollapsed} />
         </nav>
       </div>
     </div>

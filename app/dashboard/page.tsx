@@ -100,7 +100,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 md:mt-6">
       <Card>
         <CardHeader>
           <CardTitle>Welcome to Survey Builder</CardTitle>
