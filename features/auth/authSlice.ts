@@ -29,7 +29,7 @@ interface AuthState {
 
 const initialState: AuthState = {
   user: null,
-  isLoading: false,
+  isLoading: true,
   error: null,
   needsEmailVerification: false,
   verificationEmailSent: false,
