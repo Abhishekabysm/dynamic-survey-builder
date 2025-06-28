@@ -221,10 +221,10 @@ export default function Home() {
         <section id="features" className="py-12 sm:py-16 lg:py-24 bg-gray-50/90">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold text-blue-900">
+              <h2 className="text-2xl font-bold text-blue-900 sm:text-3xl md:text-4xl">
                 Powerful Features
               </h2>
-              <p className="text-lg text-gray-600 mt-2 max-w-3xl mx-auto">
+              <p className="text-base text-gray-600 sm:text-lg mt-2 max-w-3xl mx-auto">
                 Everything you need to create engaging surveys and gather
                 valuable insights.
               </p>
@@ -253,47 +253,61 @@ export default function Home() {
         <section id="pricing" className="py-12 sm:py-16 lg:py-24 bg-white">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold text-blue-900">
+              <h2 className="text-2xl font-bold text-blue-900 sm:text-3xl md:text-4xl">
                 Simple, Transparent Pricing
               </h2>
-              <p className="text-lg text-gray-600 mt-2 max-w-3xl mx-auto">
+              <p className="text-base text-gray-600 sm:text-lg mt-2 max-w-3xl mx-auto">
                 Choose the plan that's right for you.
               </p>
             </div>
-            <div className="mt-20 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+            <div className="mx-auto mt-16 grid max-w-md grid-cols-1 gap-8 md:max-w-none md:grid-cols-2 lg:grid-cols-3">
               {pricingTiers.map((tier) => (
-                <Card
+                <div
                   key={tier.name}
-                  className={`flex flex-col ${
-                    tier.popular ? 'border-blue-600' : ''
+                  className={`flex flex-col rounded-2xl border p-8 shadow-lg ${
+                    tier.popular
+                      ? 'border-blue-600 bg-blue-50'
+                      : 'border-gray-200 bg-white'
                   }`}
                 >
-                  <CardHeader>
-                    <CardTitle>{tier.name}</CardTitle>
-                    <div className="flex items-baseline">
-                      <span className="text-4xl font-bold">{tier.price}</span>
-                      {tier.pricePeriod && (
-                        <span className="text-gray-500">
-                          {tier.pricePeriod}
-                        </span>
-                      )}
-                    </div>
-                    <CardDescription>{tier.description}</CardDescription>
-                  </CardHeader>
-                  <CardContent className="flex-1">
-                    <ul className="space-y-4">
-                      {tier.features.map((feature) => (
-                        <li key={feature} className="flex items-center gap-2">
-                          <Check className="h-5 w-5 text-blue-600" />
-                          <span>{feature}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                  <CardFooter>
-                    <Button className="w-full">{tier.cta}</Button>
-                  </CardFooter>
-                </Card>
+                  <h3 className="text-lg font-semibold leading-5 text-blue-900">
+                    {tier.name}
+                  </h3>
+                  {tier.popular && (
+                    <p className="absolute top-0 -translate-y-1/2 transform rounded-full bg-blue-600 px-3 py-1 text-sm font-semibold text-white">
+                      Most Popular
+                    </p>
+                  )}
+                  <p className="mt-4 text-sm text-gray-600">
+                    {tier.description}
+                  </p>
+                  <div className="mt-4 flex items-baseline text-gray-900">
+                    <span className="text-4xl font-bold tracking-tight">
+                      {tier.price}
+                    </span>
+                    {tier.pricePeriod && (
+                      <span className="ml-1 text-xl font-semibold">
+                        {tier.pricePeriod}
+                      </span>
+                    )}
+                  </div>
+                  <ul role="list" className="mt-6 space-y-4">
+                    {tier.features.map((feature) => (
+                      <li key={feature} className="flex items-center gap-2">
+                        <Check className="h-5 w-5 text-blue-600" />
+                        <span>{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="mt-auto pt-6">
+                    <Button
+                      className="w-full"
+                      variant={tier.popular ? 'default' : 'outline'}
+                    >
+                      {tier.cta}
+                    </Button>
+                  </div>
+                </div>
               ))}
             </div>
           </div>
