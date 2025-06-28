@@ -15,7 +15,7 @@ export default function Register() {
   
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const { isLoading, error } = useAppSelector((state) => state.auth);
+  const { isActionLoading: isLoading, error } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
     // Clear any previous errors when the component mounts
