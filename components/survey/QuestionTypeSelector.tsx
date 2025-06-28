@@ -57,7 +57,7 @@ interface QuestionTypeSelectorProps {
 export default function QuestionTypeSelector({ onSelect, selectedType }: QuestionTypeSelectorProps) {
   return (
     <Select onValueChange={onSelect} value={selectedType}>
-      <SelectTrigger className="w-[180px]">
+      <SelectTrigger>
         <SelectValue placeholder="Select a question type" />
       </SelectTrigger>
       <SelectContent>

@@ -140,14 +140,15 @@ export default function EditSurveyForm({ survey }: EditSurveyFormProps) {
           
           <Card>
             <CardHeader><CardTitle>Add a New Question</CardTitle></CardHeader>
-            <CardContent className="flex flex-col md:flex-row items-stretch md:items-center gap-4">
-              <QuestionTypeSelector 
-                selectedType={selectedQuestionType}
-                onSelect={setSelectedQuestionType} 
-              />
+            <CardContent className="flex items-center gap-4">
+              <div className="flex-grow">
+                <QuestionTypeSelector 
+                  selectedType={selectedQuestionType}
+                  onSelect={setSelectedQuestionType} 
+                />
+              </div>
               <Button 
                 onClick={() => dispatch(addQuestion(createQuestion(selectedQuestionType)))}
-                className="w-full md:w-auto"
               >
                 <Plus className="mr-2 h-4 w-4" /> Add Question
               </Button>
