@@ -316,16 +316,16 @@ export default function Home() {
         <section id="about" className="py-12 sm:py-16 lg:py-24 bg-gray-50/90">
           <div className="container mx-auto px-4">
             <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold text-blue-900">
+              <h2 className="text-2xl font-bold text-blue-900 sm:text-3xl md:text-4xl">
                 About SurveyBuilder
               </h2>
-              <p className="text-lg text-gray-600 mt-2 max-w-3xl mx-auto">
+              <p className="text-base text-gray-600 sm:text-lg mt-2 max-w-3xl mx-auto">
                 We are a company dedicated to making survey building easy and
                 intuitive for everyone.
               </p>
             </div>
-            <div className="mt-20 grid grid-cols-1 gap-8 md:grid-cols-2">
-              <Card>
+            <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-2">
+              <Card className="transition-all duration-300 hover:shadow-lg">
                 <CardHeader>
                   <CardTitle>Our Mission</CardTitle>
                 </CardHeader>
@@ -338,7 +338,7 @@ export default function Home() {
                   </p>
                 </CardContent>
               </Card>
-              <Card>
+              <Card className="transition-all duration-300 hover:shadow-lg">
                 <CardHeader>
                   <CardTitle>Our Team</CardTitle>
                 </CardHeader>
