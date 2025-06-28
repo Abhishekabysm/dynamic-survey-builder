@@ -21,7 +21,8 @@ interface SerializableUser {
 
 interface AuthState {
   user: SerializableUser | null;
-  isLoading: boolean;
+  isInitialLoading: boolean; // For the initial auth check on app load
+  isActionLoading: boolean; // For login, register, logout actions
   error: string | null;
   needsEmailVerification: boolean; // This will be set by the onAuthStateChanged listener
   verificationEmailSent: boolean;
@@ -29,7 +30,8 @@ interface AuthState {
 
 const initialState: AuthState = {
   user: null,
-  isLoading: true,
+  isInitialLoading: true,
+  isActionLoading: false,
   error: null,
   needsEmailVerification: false,
   verificationEmailSent: false,
@@ -58,6 +60,9 @@ export const loginUser = createAsyncThunk(
       // The onAuthStateChanged listener will pick up the logged-in user.
       return null;
     } catch (error: any) {
+      if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
+        return rejectWithValue('Invalid email or password. Please try again.');
+      }
       return rejectWithValue(error.message);
     }
   }
@@ -97,43 +102,55 @@ const authSlice = createSlice({
     setError: (state, action: PayloadAction<string | null>) => {
       state.error = action.payload;
     },
+    setInitialLoading: (state, action: PayloadAction<boolean>) => {
+      state.isInitialLoading = action.payload;
+    },
     setLoading: (state, action: PayloadAction<boolean>) => {
-      state.isLoading = action.payload;
+      state.isActionLoading = action.payload;
     }
   },
   extraReducers: (builder) => {
     builder
       // Register
       .addCase(registerUser.pending, (state) => {
-        state.isLoading = true;
+        state.isActionLoading = true;
         state.error = null;
       })
       .addCase(registerUser.fulfilled, (state) => {
-        state.isLoading = false;
+        state.isActionLoading = false;
       })
       .addCase(registerUser.rejected, (state, action) => {
-        state.isLoading = false;
+        state.isActionLoading = false;
         state.error = action.payload as string;
       })
       // Login
       .addCase(loginUser.pending, (state) => {
-        state.isLoading = true;
+        state.isActionLoading = true;
         state.error = null;
       })
       .addCase(loginUser.fulfilled, (state) => {
-        state.isLoading = false;
+        state.isActionLoading = false;
       })
       .addCase(loginUser.rejected, (state, action) => {
-        state.isLoading = false;
+        state.isActionLoading = false;
         state.error = action.payload as string;
       })
       // Logout
-      .addCase(logoutUser.fulfilled, (state) => {
-        Object.assign(state, initialState);
+      .addCase(logoutUser.pending, (state) => {
+        state.isActionLoading = true;
       })
-      // Resend Verification Link
+      .addCase(logoutUser.fulfilled, (state) => {
+        state.isActionLoading = false;
+        state.user = null;
+      })
+      .addCase(logoutUser.rejected, (state) => {
+        state.isActionLoading = false;
+        // Handle logout error if needed
+      })
+      // Resend Verification
       .addCase(resendVerificationLink.pending, (state) => {
         state.verificationEmailSent = false;
+        state.error = null;
       })
       .addCase(resendVerificationLink.fulfilled, (state) => {
         state.verificationEmailSent = true;
@@ -144,6 +161,6 @@ const authSlice = createSlice({
   },
 });
 
-export const { setUser, setError, setLoading } = authSlice.actions;
+export const { setUser, setError, setInitialLoading } = authSlice.actions;
 
 export default authSlice.reducer; 

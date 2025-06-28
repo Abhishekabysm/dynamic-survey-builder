@@ -5,14 +5,12 @@ import { Provider } from 'react-redux';
 import { store } from '../lib/store';
 import { auth } from '../firebase/config';
 import { onAuthStateChanged, User, sendEmailVerification } from 'firebase/auth';
-import { setUser, setLoading } from '../features/auth/authSlice';
+import { setUser, setError, setInitialLoading } from '../features/auth/authSlice';
 
 // A map to track if a verification email has been sent for a user ID
 const verificationEmailSent = new Map<string, boolean>();
 
 const handleUserSession = async (user: User | null) => {
-  store.dispatch(setLoading(true));
-
   if (user) {
     // If the user is new and their email is not verified, send the verification link.
     const isNewUser = user.metadata.creationTime === user.metadata.lastSignInTime;
@@ -40,7 +38,7 @@ const handleUserSession = async (user: User | null) => {
     store.dispatch(setUser(null));
   }
   
-  store.dispatch(setLoading(false));
+  store.dispatch(setInitialLoading(false));
 };
 
 export function Providers({ children }: { children: React.ReactNode }) {
