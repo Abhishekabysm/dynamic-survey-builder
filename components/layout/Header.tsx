@@ -22,16 +22,16 @@ export const Header = () => {
         <Link href="/" className="text-2xl font-bold text-blue-900">
           SurveyBuilder
         </Link>
-        <nav className="hidden md:flex items-center gap-6">
-          <Link href="/#features" className="text-gray-600 hover:text-blue-900">
-            Features
-          </Link>
-          <Link href="/#pricing" className="text-gray-600 hover:text-blue-900">
-            Pricing
-          </Link>
-          <Link href="/about" className="text-gray-600 hover:text-blue-900">
-            About
-          </Link>
+        <nav className="hidden md:flex items-center gap-2">
+          <Button variant="ghost" asChild>
+            <Link href="/features">Features</Link>
+          </Button>
+          <Button variant="ghost" asChild>
+            <Link href="/pricing">Pricing</Link>
+          </Button>
+          <Button variant="ghost" asChild>
+            <Link href="/about">About</Link>
+          </Button>
         </nav>
         <div className="flex items-center gap-4">
           {user ? (
