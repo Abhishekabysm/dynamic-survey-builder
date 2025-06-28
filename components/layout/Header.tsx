@@ -17,9 +17,12 @@ export const Header = () => {
   };
 
   return (
-    <header className="bg-transparent absolute top-0 left-0 w-full z-10">
+    <header className="bg-white shadow-sm sticky top-0 left-0 w-full z-30">
       <div className="container mx-auto px-4 h-20 flex items-center justify-between">
-        <Link href="/" className="text-2xl font-bold text-blue-900">
+        <Link
+          href="/"
+          className="text-xl md:text-2xl font-bold text-blue-900"
+        >
           SurveyBuilder
         </Link>
         <nav className="hidden md:flex items-center gap-2">
@@ -33,13 +36,22 @@ export const Header = () => {
             <Link href="/#about">About</Link>
           </Button>
         </nav>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 md:gap-4">
           {user ? (
             <>
-              <Button variant="ghost" onClick={() => router.push('/dashboard')}>
+              <Button
+                variant="outline"
+                onClick={() => router.push('/dashboard')}
+                className="text-xs md:text-sm"
+              >
                 Dashboard
               </Button>
-              <Button onClick={handleLogout}>Logout</Button>
+              <Button
+                onClick={handleLogout}
+                className="text-xs md:text-sm"
+              >
+                Logout
+              </Button>
             </>
           ) : (
             <>
