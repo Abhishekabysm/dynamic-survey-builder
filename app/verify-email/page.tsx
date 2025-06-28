@@ -18,7 +18,7 @@ const toSerializableUser = (user: FirebaseUser) => ({
 });
 
 export default function VerifyEmail() {
-  const { user, isLoading, verificationEmailSent, error } = useAppSelector((state) => state.auth);
+  const { user, isInitialLoading, verificationEmailSent, error } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -51,7 +51,7 @@ export default function VerifyEmail() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-6 bg-white p-8 rounded-lg shadow-md text-center">
         <div className="text-blue-500 mb-4">
-          <svg className={`mx-auto h-12 w-12 ${isLoading ? 'animate-pulse' : ''}`} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg className={`mx-auto h-12 w-12 ${isInitialLoading ? 'animate-pulse' : ''}`} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
           </svg>
         </div>
@@ -83,17 +83,17 @@ export default function VerifyEmail() {
         <div className="mt-4 flex flex-col space-y-3">
           <button
             onClick={handleResend}
-            disabled={isLoading}
+            disabled={isInitialLoading}
             className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white ${
-              isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
+              isInitialLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
             } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500`}
           >
-            {isLoading ? 'Checking...' : 'Resend Verification Link'}
+            {isInitialLoading ? 'Checking...' : 'Resend Verification Link'}
           </button>
           
           <button
             onClick={handleLogout}
-            disabled={isLoading}
+            disabled={isInitialLoading}
             className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
           >
             Log Out
