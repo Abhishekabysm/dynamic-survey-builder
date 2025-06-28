@@ -139,7 +139,7 @@ export default function Dashboard() {
                     </Badge>
                   </div>
                   <Card className="hidden md:block">
-                    <CardHeader>
+                    <CardHeader className="flex flex-row items-center justify-between">
                       <CardTitle className="truncate">{survey.title}</CardTitle>
                       <Badge variant={survey.isPublished ? 'default' : 'secondary'}>
                         {survey.isPublished ? 'Published' : 'Draft'}
