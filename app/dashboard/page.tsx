@@ -156,9 +156,9 @@ export default function Dashboard() {
                       </Link>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" className="h-8 w-8 p-0">
+                          <Button variant="secondary" size="icon">
                             <span className="sr-only">Open menu</span>
-                            <MoreHorizontal className="h-4 w-4" />
+                            <MoreHorizontal />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
@@ -207,7 +207,7 @@ export default function Dashboard() {
                   </Card>
                    <div className="md:hidden mt-2">
                     <p className="text-sm text-muted-foreground line-clamp-2">{survey.description}</p>
-                    <div className="flex justify-between items-center mt-4">
+                    <div className="flex justify-end items-center mt-4 gap-2">
                        <Link href={`/dashboard/surveys/${survey.id}`}>
                         <Button variant="outline" size="sm">
                           <Edit className="mr-2 h-4 w-4" /> Edit
@@ -215,9 +215,9 @@ export default function Dashboard() {
                       </Link>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" className="h-8 w-8 p-0">
+                          <Button variant="secondary" size="icon">
                             <span className="sr-only">Open menu</span>
-                            <MoreHorizontal className="h-4 w-4" />
+                            <MoreHorizontal />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
