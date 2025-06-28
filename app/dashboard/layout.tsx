@@ -37,29 +37,29 @@ interface DashboardLayoutProps {
 }
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
-  const { user, isLoading, needsEmailVerification } = useAppSelector((state) => state.auth);
+  const { user, isInitialLoading, needsEmailVerification } = useAppSelector((state) => state.auth);
   const router = useRouter();
   const dispatch = useAppDispatch();
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const isMobile = useIsMobile();
 
   useEffect(() => {
-    if (!isLoading && !user) {
+    if (!isInitialLoading && !user) {
       router.push('/login');
       return;
     }
     
-    if (!isLoading && user && needsEmailVerification) {
+    if (!isInitialLoading && user && needsEmailVerification) {
       router.push('/verify-email');
     }
-  }, [user, isLoading, needsEmailVerification, router]);
+  }, [user, isInitialLoading, needsEmailVerification, router]);
 
   const handleLogout = async () => {
     await dispatch(logoutUser());
     router.push('/');
   };
 
-  if (isLoading || !user || needsEmailVerification) {
+  if (isInitialLoading || !user || needsEmailVerification) {
     return (
       <div className="flex h-screen items-center justify-center">
         <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary"></div>
