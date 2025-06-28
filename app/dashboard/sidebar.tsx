@@ -62,7 +62,7 @@ export function DashboardSidebar({ isCollapsed, onCollapse }: { isCollapsed: boo
     <div className="flex h-full max-h-screen flex-col">
       <div className={cn("flex h-16 items-center border-b px-4", isCollapsed && "justify-center px-2")}>
         <Link href="/" className={cn("flex items-center gap-2 font-semibold", isCollapsed && "hidden")}>
-          <span className="">Survey Builder</span>
+          <span className="whitespace-nowrap">Survey Builder</span>
         </Link>
         <Button size="icon" variant="ghost" onClick={onCollapse} className={cn("hidden md:flex", !isCollapsed && "ml-auto")}>
             {isCollapsed ? <PanelRightClose className="h-5 w-5" /> : <PanelLeftClose className="h-5 w-5" />}
