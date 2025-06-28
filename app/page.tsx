@@ -6,16 +6,20 @@ import { useAppSelector } from '../lib/store';
 import { Button } from '@/components/ui/button';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
+import Image from 'next/image';
 import {
   ArrowRight,
   BarChart,
   Check,
   Edit,
   FileText,
+  Heart,
   Lock,
   MousePointerClick,
   Paintbrush,
+  Rocket,
   Share2,
+  Users,
   Zap,
 } from 'lucide-react';
 import {
@@ -110,6 +114,27 @@ const pricingTiers = [
       'Custom integrations',
     ],
     cta: 'Contact Sales',
+  },
+];
+
+const aboutContent = [
+  {
+    icon: <Rocket className="h-8 w-8 text-blue-600" />,
+    title: 'Our Mission',
+    description:
+      'To provide the best tools for creating effective and beautiful surveys.',
+  },
+  {
+    icon: <Heart className="h-8 w-8 text-blue-600" />,
+    title: 'Our Vision',
+    description:
+      'A world where feedback is seamless, enabling continuous improvement for all.',
+  },
+  {
+    icon: <Users className="h-8 w-8 text-blue-600" />,
+    title: 'Our Team',
+    description:
+      'Passionate creators dedicated to crafting the ultimate survey-building experience.',
   },
 ];
 
@@ -313,44 +338,50 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="about" className="py-12 sm:py-16 lg:py-24 bg-gray-50/90">
+        <section id="about" className="py-12 sm:py-16 lg:py-24 bg-white">
           <div className="container mx-auto px-4">
-            <div className="text-center mb-12">
-              <h2 className="text-2xl font-bold text-blue-900 sm:text-3xl md:text-4xl">
+            <div className="text-center mb-12 lg:mb-16">
+              <h2 className="text-3xl font-bold tracking-tight text-blue-900 sm:text-4xl lg:text-5xl">
                 About SurveyBuilder
               </h2>
-              <p className="text-base text-gray-600 sm:text-lg mt-2 max-w-3xl mx-auto">
-                We are a company dedicated to making survey building easy and
-                intuitive for everyone.
+              <p className="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">
+                We are committed to building custom solutions that drive
+                business success.
               </p>
             </div>
-            <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-2">
-              <Card className="transition-all duration-300 hover:shadow-lg">
-                <CardHeader>
-                  <CardTitle>Our Mission</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p>
-                    Our mission is to empower businesses, researchers, and
-                    individuals to create beautiful, effective surveys without
-                    needing any technical skills. We believe that gathering
-                    feedback should be a simple and enjoyable process.
-                  </p>
-                </CardContent>
-              </Card>
-              <Card className="transition-all duration-300 hover:shadow-lg">
-                <CardHeader>
-                  <CardTitle>Our Team</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p>
-                    We are a passionate team of designers, developers, and product
-                    thinkers who are obsessed with creating the best possible user
-                    experience. We are fully remote and dedicated to building a
-                    tool that our customers love.
-                  </p>
-                </CardContent>
-              </Card>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+              <div>
+                <Image
+                  src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1632&q=80"
+                  alt="Our team working together"
+                  width={800}
+                  height={600}
+                  className="rounded-lg shadow-xl"
+                />
+              </div>
+              <div className="text-gray-700 space-y-6">
+                <p>
+                  At SurveyBuilder, we specialize in crafting bespoke online
+                  solutions tailored to elevate businesses toward their digital
+                  objectives. We are committed to continuous evolution and stay
+                  abreast of cutting-edge web technologies and trends to ensure
+                  a constant delivery of unparalleled excellence.
+                </p>
+                <p>
+                  Our ethos is rooted in equipping clients with the essential
+                  tools for triumph in the digital realm. We firmly believe in
+                  furnishing every business with a digital presence that
+                  authentically embodies their brand essence and effectively
+                  resonates with their target demographic.
+                </p>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  onClick={() => router.push('/#pricing')}
+                >
+                  Get in Touch
+                </Button>
+              </div>
             </div>
           </div>
         </section>
