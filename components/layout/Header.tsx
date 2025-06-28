@@ -16,6 +16,18 @@ export const Header = () => {
     router.push('/');
   };
 
+  const handleScroll = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+    e.preventDefault();
+    const href = e.currentTarget.href;
+    const targetId = href.replace(/.*#/, '');
+    const elem = document.getElementById(targetId);
+    if (elem) {
+      elem.scrollIntoView({
+        behavior: 'smooth',
+      });
+    }
+  };
+
   return (
     <header className="bg-white shadow-sm sticky top-0 left-0 w-full z-30">
       <div className="container mx-auto px-4 h-20 flex items-center justify-between">
@@ -27,13 +39,19 @@ export const Header = () => {
         </Link>
         <nav className="hidden md:flex items-center gap-2">
           <Button variant="ghost" asChild>
-            <Link href="/#features">Features</Link>
+            <Link href="/#features" onClick={handleScroll}>
+              Features
+            </Link>
           </Button>
           <Button variant="ghost" asChild>
-            <Link href="/#pricing">Pricing</Link>
+            <Link href="/#pricing" onClick={handleScroll}>
+              Pricing
+            </Link>
           </Button>
           <Button variant="ghost" asChild>
-            <Link href="/#about">About</Link>
+            <Link href="/#about" onClick={handleScroll}>
+              About
+            </Link>
           </Button>
         </nav>
         <div className="flex items-center gap-2 md:gap-4">
