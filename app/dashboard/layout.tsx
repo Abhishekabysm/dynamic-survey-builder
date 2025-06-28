@@ -108,6 +108,12 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                   Home
                 </DropdownMenuItem>
                 <DropdownMenuItem
+                  onClick={() => router.push('/dashboard')}
+                  className="cursor-pointer"
+                >
+                  Dashboard
+                </DropdownMenuItem>
+                <DropdownMenuItem
                   onClick={() => router.push('/dashboard/surveys')}
                   className="cursor-pointer"
                 >
