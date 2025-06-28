@@ -32,9 +32,10 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { MoreHorizontal, PlusCircle, Trash2, Edit, BarChart2, Link as LinkIcon, ExternalLink, UploadCloud } from 'lucide-react';
+import { MoreHorizontal, PlusCircle, Trash2, Edit, BarChart2, Link as LinkIcon, ExternalLink, UploadCloud, List, Send, MessageSquare } from 'lucide-react';
 import { toast } from 'sonner';
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion';
+import { StatCard } from './StatCard';
 
 export default function Dashboard() {
   const { user } = useAppSelector((state) => state.auth);
@@ -49,6 +50,9 @@ export default function Dashboard() {
       dispatch(fetchUserSurveys(user.uid));
     }
   }, [dispatch, user]);
+
+  const publishedSurveys = surveys.filter(s => s.isPublished).length;
+  const totalResponses = surveys.reduce((acc, survey) => acc + (survey.responseCount || 0), 0);
 
   const handleDelete = () => {
     if (selectedSurveyId) {
@@ -283,18 +287,30 @@ export default function Dashboard() {
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div>
-          <Card className="flex flex-col">
+          <Card className="flex flex-col h-full">
             <CardHeader>
               <CardTitle>Quick Stats</CardTitle>
             </CardHeader>
-            <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="border rounded-lg p-4 text-center">
-                <p className="text-4xl font-bold text-primary">{surveys.length}</p>
-                <p className="text-sm text-muted-foreground mt-1">Total Surveys</p>
-              </div>
-              <div className="border rounded-lg p-4 text-center">
-                <p className="text-4xl font-bold text-primary">{surveys.filter(s => s.isPublished).length}</p>
-                <p className="text-sm text-muted-foreground mt-1">Published</p>
+            <CardContent className="flex-grow flex items-center">
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 w-full">
+                <StatCard
+                  title="Total Surveys"
+                  value={surveys.length}
+                  icon={List}
+                  color="#4A90E2"
+                />
+                <StatCard
+                  title="Published Surveys"
+                  value={publishedSurveys}
+                  icon={Send}
+                  color="#50E3C2"
+                />
+                <StatCard
+                  title="Total Responses"
+                  value={totalResponses}
+                  icon={MessageSquare}
+                  color="#F5A623"
+                />
               </div>
             </CardContent>
           </Card>
@@ -342,9 +358,9 @@ export default function Dashboard() {
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogTitle>Are you sure you want to delete this survey?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the survey.
+              This action cannot be undone. This will permanently delete the survey and all its responses.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -357,9 +373,9 @@ export default function Dashboard() {
       <AlertDialog open={showPublishDialog} onOpenChange={setShowPublishDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Publish Survey</AlertDialogTitle>
+            <AlertDialogTitle>Are you sure you want to publish this survey?</AlertDialogTitle>
             <AlertDialogDescription>
-              This survey will be publicly available. Are you sure you want to publish it?
+              Once published, the survey will be live and accessible via its link. You can still unpublish it later.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
