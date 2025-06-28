@@ -29,6 +29,7 @@ import {
 } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { DashboardSidebar } from './sidebar';
+import Link from 'next/link';
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -80,17 +81,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         <div className="flex flex-col flex-1">
           <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 md:static md:h-auto md:border-0 md:bg-transparent md:px-6">
             {isMobile && (
-              <Sheet>
-                <SheetTrigger asChild>
-                  <Button size="icon" variant="outline" className="md:hidden">
-                    <Menu className="h-5 w-5" />
-                    <span className="sr-only">Toggle Menu</span>
-                  </Button>
-                </SheetTrigger>
-                <SheetContent side="left" className="sm:max-w-xs p-0">
-                  <DashboardSidebar isCollapsed={false} />
-                </SheetContent>
-              </Sheet>
+               <Link href="/" className="font-semibold text-lg">
+                SurveyBuilder
+               </Link>
             )}
             <div className="flex-1"></div>
             <DropdownMenu>
@@ -101,31 +94,35 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem
-                  onClick={() => router.push('/')}
-                  className="cursor-pointer"
-                >
-                  Home
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => router.push('/dashboard')}
-                  className="cursor-pointer"
-                >
-                  Dashboard
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => router.push('/dashboard/surveys')}
-                  className="cursor-pointer"
-                >
-                  My Surveys
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => router.push('/dashboard/responses')}
-                  className="cursor-pointer"
-                >
-                  Responses
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
+                {isMobile ? (
+                  <>
+                    <DropdownMenuItem
+                      onClick={() => router.push('/')}
+                      className="cursor-pointer"
+                    >
+                      Home
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => router.push('/dashboard')}
+                      className="cursor-pointer"
+                    >
+                      Dashboard
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => router.push('/dashboard/surveys')}
+                      className="cursor-pointer"
+                    >
+                      My Surveys
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => router.push('/dashboard/responses')}
+                      className="cursor-pointer"
+                    >
+                      Responses
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                  </>
+                ) : null}
                 <DropdownMenuItem
                   onClick={handleLogout}
                   className="cursor-pointer"

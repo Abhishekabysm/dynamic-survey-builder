@@ -74,8 +74,8 @@ export default function EditSurveyForm({ survey }: EditSurveyFormProps) {
 
   return (
     <div className="max-w-4xl mx-auto py-8">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Edit Survey</h1>
+      <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+        <h1 className="text-2xl font-bold">Edit Survey</h1>
         <div className="flex space-x-2">
           <Button variant="outline" onClick={() => setShowPreview(!showPreview)}>
             <Eye className="mr-2 h-4 w-4" />
@@ -140,12 +140,15 @@ export default function EditSurveyForm({ survey }: EditSurveyFormProps) {
           
           <Card>
             <CardHeader><CardTitle>Add a New Question</CardTitle></CardHeader>
-            <CardContent className="flex items-center gap-4">
+            <CardContent className="flex flex-col md:flex-row items-stretch md:items-center gap-4">
               <QuestionTypeSelector 
                 selectedType={selectedQuestionType}
                 onSelect={setSelectedQuestionType} 
               />
-              <Button onClick={() => dispatch(addQuestion(createQuestion(selectedQuestionType)))}>
+              <Button 
+                onClick={() => dispatch(addQuestion(createQuestion(selectedQuestionType)))}
+                className="w-full md:w-auto"
+              >
                 <Plus className="mr-2 h-4 w-4" /> Add Question
               </Button>
             </CardContent>
