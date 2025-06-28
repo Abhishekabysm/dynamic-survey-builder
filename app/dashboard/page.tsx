@@ -34,6 +34,7 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { MoreHorizontal, PlusCircle, Trash2, Edit, BarChart2, Link as LinkIcon, ExternalLink, UploadCloud } from 'lucide-react';
 import { toast } from 'sonner';
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion';
 
 export default function Dashboard() {
   const { user } = useAppSelector((state) => state.auth);
@@ -281,46 +282,61 @@ export default function Dashboard() {
       </Card>
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Quick Stats</CardTitle>
-          </CardHeader>
-          <CardContent className="grid grid-cols-2 gap-4">
-            <div className="bg-muted p-4 rounded-lg">
-              <div className="text-3xl font-bold text-primary">{surveys.length}</div>
-              <div className="text-sm text-muted-foreground">Total Surveys</div>
-            </div>
-            <div className="bg-muted p-4 rounded-lg">
-              <div className="text-3xl font-bold text-primary">{surveys.filter(s => s.isPublished).length}</div>
-              <div className="text-sm text-muted-foreground">Published</div>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader>
-            <CardTitle>Resources</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ul className="space-y-3">
-              <li>
-                <Link href="/dashboard/help" className="text-primary hover:underline">
-                  How to create effective surveys?
-                </Link>
-              </li>
-              <li>
-                <Link href="/dashboard/templates" className="text-primary hover:underline">
-                  Survey templates
-                </Link>
-              </li>
-              <li>
-                <Link href="/dashboard/help/response-analysis" className="text-primary hover:underline">
-                  Understanding response analytics
-                </Link>
-              </li>
-            </ul>
-          </CardContent>
-        </Card>
+        <div>
+          <Card className="flex flex-col">
+            <CardHeader>
+              <CardTitle>Quick Stats</CardTitle>
+            </CardHeader>
+            <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="border rounded-lg p-4 text-center">
+                <p className="text-4xl font-bold text-primary">{surveys.length}</p>
+                <p className="text-sm text-muted-foreground mt-1">Total Surveys</p>
+              </div>
+              <div className="border rounded-lg p-4 text-center">
+                <p className="text-4xl font-bold text-primary">{surveys.filter(s => s.isPublished).length}</p>
+                <p className="text-sm text-muted-foreground mt-1">Published</p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+        <div>
+          <Card>
+            <CardHeader>
+              <CardTitle>Resources</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Accordion type="single" collapsible className="w-full">
+                <AccordionItem value="item-1">
+                  <AccordionTrigger>
+                    How to create effective surveys?
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    Start with a clear goal, keep your questions simple and direct,
+                    and use a mix of question types to keep your audience engaged.
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="item-2">
+                  <AccordionTrigger>Survey templates</AccordionTrigger>
+                  <AccordionContent>
+                    Explore our library of pre-built survey templates for common
+                    use cases like customer feedback, market research, and employee
+                    satisfaction.
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="item-3">
+                  <AccordionTrigger>
+                    Understanding response analytics
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    Our analytics dashboard helps you visualize your survey data
+                    with charts and graphs, making it easy to spot trends and
+                    insights.
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            </CardContent>
+          </Card>
+        </div>
       </div>
 
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
