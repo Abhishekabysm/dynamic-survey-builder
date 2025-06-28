@@ -8,7 +8,8 @@ import {
   deleteDoc, 
   query, 
   where, 
-  getDocs 
+  getDocs,
+  getCountFromServer
 } from 'firebase/firestore';
 import { firestore } from '../../firebase/config';
 
@@ -38,6 +39,7 @@ export interface Survey {
   createdAt: number;
   updatedAt?: number;
   isPublished: boolean;
+  responseCount?: number;
 }
 
 interface SurveyState {
@@ -74,18 +76,24 @@ export const fetchUserSurveys = createAsyncThunk(
   'survey/fetchUserSurveys',
   async (userId: string, { rejectWithValue }) => {
     try {
-      console.log('fetchUserSurveys: Querying for userId:', userId);
       const surveysRef = collection(firestore, 'surveys');
       const q = query(surveysRef, where('createdBy', '==', userId));
       const querySnapshot = await getDocs(q);
       
-      const surveys = querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      })) as Survey[];
+      const surveysWithCounts = await Promise.all(
+        querySnapshot.docs.map(async (doc) => {
+          const surveyData = { id: doc.id, ...doc.data() } as Survey;
+          const responsesRef = collection(firestore, 'responses');
+          const responsesQuery = query(responsesRef, where('surveyId', '==', surveyData.id));
+          const snapshot = await getCountFromServer(responsesQuery);
+          return {
+            ...surveyData,
+            responseCount: snapshot.data().count,
+          };
+        })
+      );
 
-      console.log('fetchUserSurveys: Found surveys:', surveys.length);
-      return surveys;
+      return surveysWithCounts;
     } catch (error: any) {
       console.error('fetchUserSurveys: Error fetching surveys', error);
       return rejectWithValue(error.message || 'Failed to fetch surveys');

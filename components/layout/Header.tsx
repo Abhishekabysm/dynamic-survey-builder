@@ -60,6 +60,7 @@ export const Header = () => {
               <Button
                 variant="outline"
                 onClick={() => router.push('/dashboard')}
+                onMouseEnter={() => router.prefetch('/dashboard')}
                 className="text-xs md:text-sm"
               >
                 Dashboard
@@ -74,10 +75,17 @@ export const Header = () => {
           ) : (
             <>
               <Button variant="ghost" asChild>
-                <Link href="/login">Login</Link>
+                <Link href="/login" onMouseEnter={() => router.prefetch('/login')}>
+                  Login
+                </Link>
               </Button>
               <Button asChild>
-                <Link href="/register">Get Started</Link>
+                <Link
+                  href="/register"
+                  onMouseEnter={() => router.prefetch('/register')}
+                >
+                  Get Started
+                </Link>
               </Button>
             </>
           )}
