@@ -11,11 +11,13 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { useAppSelector } from '@/lib/store';
 
 export default function TakeSurveyPage() {
   const params = useParams();
   const router = useRouter();
   const surveyId = params.surveyId as string;
+  const { user } = useAppSelector((state) => state.auth);
 
   const [survey, setSurvey] = useState<Survey | null>(null);
   const [answers, setAnswers] = useState<{ [questionId: string]: any }>({});
@@ -33,7 +35,12 @@ export default function TakeSurveyPage() {
         const surveyDoc = await getDoc(surveyRef);
 
         if (surveyDoc.exists() && surveyDoc.data().isPublished) {
-          setSurvey({ id: surveyDoc.id, ...surveyDoc.data() } as Survey);
+          const surveyData = { id: surveyDoc.id, ...surveyDoc.data() } as Survey;
+          if (user && surveyData.createdBy === user.uid) {
+            router.replace(`/dashboard/surveys/${surveyId}/results`);
+            return;
+          }
+            setSurvey(surveyData);
         } else {
           setError('This survey is not available.');
         }
@@ -45,7 +52,7 @@ export default function TakeSurveyPage() {
     };
 
     fetchSurvey();
-  }, [surveyId]);
+  }, [surveyId, user, router]);
   
   const handleAnswerChange = (questionId: string, value: any) => {
     setAnswers(prev => ({ ...prev, [questionId]: value }));

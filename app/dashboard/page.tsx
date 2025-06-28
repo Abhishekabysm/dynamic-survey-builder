@@ -65,7 +65,8 @@ export default function Dashboard() {
     }
   };
 
-  const handleCopyLink = (surveyId: string) => {
+  const handleCopyLink = (e: React.MouseEvent, surveyId: string) => {
+    e.stopPropagation();
     const link = `${window.location.origin}/survey/${surveyId}`;
     navigator.clipboard.writeText(link).then(() => {
       toast.success("Link Copied", {
@@ -172,7 +173,7 @@ export default function Dashboard() {
                               </DropdownMenuItem>
                           )}
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem onClick={() => handleCopyLink(survey.id!)} disabled={!survey.isPublished}>
+                          <DropdownMenuItem onClick={(e) => handleCopyLink(e, survey.id!)} disabled={!survey.isPublished}>
                             <LinkIcon className="mr-2 h-4 w-4" />
                             Copy Link
                           </DropdownMenuItem>

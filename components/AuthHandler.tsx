@@ -25,7 +25,9 @@ export const AuthHandler = () => {
       return;
     }
 
-    const isProtectedRoute = !PUBLIC_ROUTES.includes(pathname) && !AUTH_ROUTES.includes(pathname) && pathname !== '/verify-email';
+    const isAuthRoute = AUTH_ROUTES.includes(pathname);
+    const isPublicRoute = PUBLIC_ROUTES.includes(pathname) || pathname.startsWith('/survey');
+    const isProtectedRoute = !isPublicRoute && !isAuthRoute && pathname !== '/verify-email';
 
     // If not logged in and trying to access a protected route, redirect to login.
     if (!user && isProtectedRoute) {
