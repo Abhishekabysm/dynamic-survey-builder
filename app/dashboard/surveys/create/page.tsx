@@ -1,4 +1,5 @@
 'use client';
+import Loader from '@/components/Loader';
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -71,15 +72,15 @@ export default function CreateSurvey() {
   if (!currentSurvey) {
     return (
       <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+        <Loader />
       </div>
     );
   }
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-4xl mx-auto md:pt-8">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">
+        <h1 className="text-2xl font-bold md:text-3xl">
           {currentSurvey.id ? 'Edit Survey' : 'Create New Survey'}
         </h1>
         <div className="flex space-x-2">

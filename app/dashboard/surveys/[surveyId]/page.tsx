@@ -1,4 +1,5 @@
 'use client';
+import Loader from '@/components/Loader';
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
@@ -51,7 +52,7 @@ export default function EditSurveyPage() {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-full">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+        <Loader />
         <p className="ml-4 text-lg">Loading survey...</p>
       </div>
     );

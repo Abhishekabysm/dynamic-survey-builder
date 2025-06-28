@@ -1,5 +1,7 @@
 'use client';
 
+import { PuffLoader } from 'react-spinners';
+
 import { useEffect, useState } from 'react';
 import { useAppSelector, useAppDispatch } from '@/lib/store';
 import { fetchUserSurveys, Survey } from '@/features/survey/surveySlice';
@@ -63,8 +65,7 @@ export default function ResponsesPage() {
         </div>
         {allLoading ? (
           <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-            <p className="ml-4">Loading survey responses...</p>
+            <PuffLoader color="#4A90E2" />
           </div>
         ) : surveysWithResponses.length > 0 ? (
           <div className="grid grid-cols-1 gap-4">
@@ -111,8 +112,7 @@ export default function ResponsesPage() {
         <CardContent>
           {allLoading ? (
             <div className="flex justify-center items-center h-64">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-              <p className="ml-4">Loading survey responses...</p>
+              <PuffLoader color="#4A90E2" />
             </div>
           ) : surveysWithResponses.length > 0 ? (
             <Table>
