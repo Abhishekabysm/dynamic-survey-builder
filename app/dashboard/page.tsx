@@ -32,7 +32,22 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { MoreHorizontal, PlusCircle, Trash2, Edit, BarChart2, Link as LinkIcon, ExternalLink, UploadCloud, List, Send, MessageSquare } from 'lucide-react';
+import {
+  MoreHorizontal,
+  PlusCircle,
+  Trash2,
+  Edit,
+  BarChart2,
+  Link as LinkIcon,
+  ExternalLink,
+  UploadCloud,
+  List,
+  Send,
+  MessageSquare,
+  HelpCircle,
+  Book,
+  BarChartHorizontal,
+} from 'lucide-react';
 import { toast } from 'sonner';
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion';
 import { StatCard } from './StatCard';
@@ -316,34 +331,45 @@ export default function Dashboard() {
           </Card>
         </div>
         <div>
-          <Card>
+          <Card className="h-full">
             <CardHeader>
               <CardTitle>Resources</CardTitle>
             </CardHeader>
             <CardContent>
-              <Accordion type="single" collapsible className="w-full">
-                <AccordionItem value="item-1">
+              <Accordion type="single" collapsible className="w-full space-y-2">
+                <AccordionItem value="item-1" className="border rounded-lg px-4 bg-background hover:bg-muted/50 transition-colors">
                   <AccordionTrigger>
-                    How to create effective surveys?
+                    <div className="flex items-center space-x-3">
+                      <HelpCircle className="h-5 w-5 text-blue-500" />
+                      <span>How to create effective surveys?</span>
+                    </div>
                   </AccordionTrigger>
-                  <AccordionContent>
+                  <AccordionContent className="text-muted-foreground pl-8">
                     Start with a clear goal, keep your questions simple and direct,
                     and use a mix of question types to keep your audience engaged.
                   </AccordionContent>
                 </AccordionItem>
-                <AccordionItem value="item-2">
-                  <AccordionTrigger>Survey templates</AccordionTrigger>
-                  <AccordionContent>
+                <AccordionItem value="item-2" className="border rounded-lg px-4 bg-background hover:bg-muted/50 transition-colors">
+                  <AccordionTrigger>
+                    <div className="flex items-center space-x-3">
+                      <Book className="h-5 w-5 text-green-500" />
+                      <span>Survey templates</span>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="text-muted-foreground pl-8">
                     Explore our library of pre-built survey templates for common
                     use cases like customer feedback, market research, and employee
                     satisfaction.
                   </AccordionContent>
                 </AccordionItem>
-                <AccordionItem value="item-3">
+                <AccordionItem value="item-3" className="border rounded-lg px-4 bg-background hover:bg-muted/50 transition-colors">
                   <AccordionTrigger>
-                    Understanding response analytics
+                    <div className="flex items-center space-x-3">
+                      <BarChartHorizontal className="h-5 w-5 text-orange-500" />
+                      <span>Understanding response analytics</span>
+                    </div>
                   </AccordionTrigger>
-                  <AccordionContent>
+                  <AccordionContent className="text-muted-foreground pl-8">
                     Our analytics dashboard helps you visualize your survey data
                     with charts and graphs, making it easy to spot trends and
                     insights.
