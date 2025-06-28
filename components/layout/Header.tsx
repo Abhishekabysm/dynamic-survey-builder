@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAppSelector, useAppDispatch } from '@/lib/store';
@@ -10,6 +11,39 @@ export const Header = () => {
   const { user } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
   const router = useRouter();
+  const [activeLink, setActiveLink] = useState('home');
+
+  useEffect(() => {
+    const sections = ['features', 'pricing', 'about'];
+    const headerHeight = 80; // Height of the sticky header
+
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      let current = 'home';
+
+      for (const id of sections) {
+        const section = document.getElementById(id);
+        if (section) {
+          const sectionTop = section.offsetTop - headerHeight;
+          if (scrollY >= sectionTop) {
+            current = id;
+          }
+        }
+      }
+
+      // Check if user has scrolled to the very bottom
+      if (window.innerHeight + scrollY >= document.body.offsetHeight - 2) {
+        current = 'about';
+      }
+      
+      setActiveLink(current);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    handleScroll(); // Set initial active link
+
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const handleLogout = async () => {
     await dispatch(logoutUser());
@@ -47,22 +81,22 @@ export const Header = () => {
           SurveyBuilder
         </Link>
         <nav className="hidden md:flex items-center gap-2">
-          <Button variant="ghost" asChild>
+          <Button variant={activeLink === 'home' ? 'default' : 'ghost'} asChild>
             <Link href="/" onClick={handleScroll}>
               Home
             </Link>
           </Button>
-          <Button variant="ghost" asChild>
+          <Button variant={activeLink === 'features' ? 'default' : 'ghost'} asChild>
             <Link href="/#features" onClick={handleScroll}>
               Features
             </Link>
           </Button>
-          <Button variant="ghost" asChild>
+          <Button variant={activeLink === 'pricing' ? 'default' : 'ghost'} asChild>
             <Link href="/#pricing" onClick={handleScroll}>
               Pricing
             </Link>
           </Button>
-          <Button variant="ghost" asChild>
+          <Button variant={activeLink === 'about' ? 'default' : 'ghost'} asChild>
             <Link href="/#about" onClick={handleScroll}>
               About
             </Link>
