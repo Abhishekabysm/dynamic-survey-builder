@@ -26,6 +26,9 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 const features = [
   {
@@ -118,29 +121,99 @@ export default function Home() {
     <div className="flex flex-col min-h-screen bg-white">
       <Header />
       <main className="flex-grow">
-        <section className="pt-24 pb-12 sm:pt-32 sm:pb-16 lg:pt-40 lg:pb-24">
-          <div className="container mx-auto px-4 text-center">
-            <h1 className="text-4xl md:text-6xl font-extrabold text-blue-900 mb-4 leading-tight">
-              Create Stunning Surveys in Minutes
-            </h1>
-            <p className="text-lg md:text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-              Build beautiful, interactive surveys and forms. Gather rich
-              feedback and analyze your data with powerful, easy-to-use tools.
-            </p>
-            <div className="flex justify-center">
-              {user ? (
-                <Button size="lg" onClick={() => router.push('/dashboard')}>
-                  Go to Dashboard
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-              ) : (
-                <Button size="lg" asChild>
-                  <Link href="/register">
-                    Get Started for Free
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Link>
-                </Button>
-              )}
+        <section className="relative w-full overflow-hidden bg-white">
+          <div className="absolute inset-0 -z-10 h-full w-full bg-white bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] bg-[size:6rem_4rem]">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_800px_at_50%_200px,#dbeafe,transparent)]" />
+          </div>
+
+          <div className="container mx-auto px-4">
+            <div className="grid grid-cols-1 items-center gap-x-12 gap-y-16 py-24 lg:min-h-screen lg:grid-cols-2 lg:py-0">
+              <div className="text-center lg:text-left">
+                <h1 className="text-4xl font-extrabold leading-tight tracking-tighter text-blue-900 sm:text-5xl md:text-6xl lg:text-7xl">
+                  Create Stunning Surveys in Minutes
+                </h1>
+                <p className="mx-auto mt-6 max-w-xl text-lg text-gray-700 md:text-xl lg:mx-0">
+                  Build beautiful, interactive surveys and forms. Gather rich
+                  feedback and analyze your data with powerful, easy-to-use
+                  tools.
+                </p>
+                <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center lg:justify-start">
+                  {user ? (
+                    <Button
+                      size="lg"
+                      onClick={() => router.push('/dashboard')}
+                      className="shadow-lg transition-shadow hover:shadow-xl"
+                    >
+                      Go to Dashboard
+                      <ArrowRight className="ml-2 h-5 w-5" />
+                    </Button>
+                  ) : (
+                    <Button
+                      size="lg"
+                      asChild
+                      className="shadow-lg transition-shadow hover:shadow-xl"
+                    >
+                      <Link href="/register">
+                        Get Started for Free
+                        <ArrowRight className="ml-2 h-5 w-5" />
+                      </Link>
+                    </Button>
+                  )}
+                </div>
+              </div>
+              <div
+                className="flex items-center justify-center relative"
+                aria-hidden="true"
+              >
+                <div className="relative w-full max-w-md">
+                  <div className="absolute -top-12 -right-12 w-32 h-32 bg-blue-100 rounded-full -z-10" />
+                  <div className="absolute -bottom-12 -left-12 w-32 h-32 bg-gray-100 rounded-full -z-10" />
+                  <Card className="transform-gpu -rotate-2 transition-transform duration-500 hover:rotate-0 focus-within:rotate-0 sm:-rotate-6 shadow-2xl">
+                    <CardHeader>
+                      <CardTitle>New Survey</CardTitle>
+                      <CardDescription>
+                        What would you like to ask?
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="q1">
+                          What is your favorite feature?
+                        </Label>
+                        <Input
+                          id="q1"
+                          placeholder="e.g., Drag-and-drop builder"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>How likely are you to recommend us?</Label>
+                        <RadioGroup
+                          defaultValue="4"
+                          className="flex justify-between pt-2"
+                        >
+                          {[...Array(5)].map((_, i) => (
+                            <div
+                              key={i}
+                              className="flex flex-col items-center space-y-2"
+                            >
+                              <RadioGroupItem
+                                value={String(i + 1)}
+                                id={`r${i + 1}`}
+                              />
+                              <Label
+                                htmlFor={`r${i + 1}`}
+                                className="text-xs"
+                              >
+                                {i + 1}
+                              </Label>
+                            </div>
+                          ))}
+                        </RadioGroup>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
             </div>
           </div>
         </section>
