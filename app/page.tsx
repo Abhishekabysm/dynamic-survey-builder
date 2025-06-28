@@ -1,10 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useAppSelector, useAppDispatch } from '../lib/store';
-import { logoutUser } from '../features/auth/authSlice';
+import { useAppSelector } from '../lib/store';
 import { Button } from '@/components/ui/button';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
@@ -12,13 +10,7 @@ import { ArrowRight, BarChart, Edit, Share2 } from 'lucide-react';
 
 export default function Home() {
   const { user } = useAppSelector((state) => state.auth);
-  const dispatch = useAppDispatch();
   const router = useRouter();
-
-  const handleLogout = async () => {
-    await dispatch(logoutUser());
-    router.push('/');
-  };
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
@@ -32,29 +24,19 @@ export default function Home() {
             <p className="text-lg md:text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
               Build beautiful, interactive surveys and forms. Gather rich feedback and analyze your data with powerful, easy-to-use tools.
             </p>
-            <div className="flex justify-center gap-4">
+            <div className="flex justify-center">
               {user ? (
-                <>
-                  <Button size="lg" onClick={() => router.push('/dashboard')}>
-                    Go to Dashboard
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Button>
-                  <Button size="lg" variant="outline" onClick={handleLogout}>
-                    Logout
-                  </Button>
-                </>
+                <Button size="lg" onClick={() => router.push('/dashboard')}>
+                  Go to Dashboard
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
               ) : (
-                <>
-                  <Button size="lg" asChild>
-                    <Link href="/register">
-                      Get Started for Free
-                      <ArrowRight className="ml-2 h-5 w-5" />
-                    </Link>
-                  </Button>
-                  <Button size="lg" variant="ghost" asChild>
-                    <Link href="/login">Login</Link>
-                  </Button>
-                </>
+                <Button size="lg" asChild>
+                  <Link href="/register">
+                    Get Started for Free
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Link>
+                </Button>
               )}
             </div>
           </div>
